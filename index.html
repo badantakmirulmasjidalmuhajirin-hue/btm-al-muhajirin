@@ -14,7 +14,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <!-- Babel untuk JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
     <div id="root"></div>
@@ -34,8 +34,8 @@
 
           // --- STATE DATA UTAMA ---
           const [keuangan, setKeuangan] = useState([
-            { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, ketKeluar: '-', saldo: 5000000 },
-            { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, ketKeluar: '-', saldo: 6250000 }
+            { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, saldo: 5000000 },
+            { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, saldo: 6250000 }
           ]);
 
           const [jamaahList, setJamaahList] = useState([
@@ -625,20 +625,20 @@
           );
         }
 
-        // --- MODUL KEUANGAN (BISA DOWNLOAD) ---
+        // --- MODUL KEUANGAN (HANYA SUPER ADMIN YANG BISA TAMBAH, BTM & JAMAAH HANYA LIHAT & DOWNLOAD) ---
         function KeuanganModule({ keuangan, setKeuangan, user }) {
           const [form, setForm] = useState({ tanggal: '', uraian: '', masuk: 0, keluar: 0 });
 
           const handleAdd = (e) => {
             e.preventDefault();
-            if (user.role === 'jamaah') {
-              alert('Jamaah hanya dapat melihat dan mendownload laporan keuangan.');
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak! Pengurus BTM dan Jamaah tidak memiliki hak untuk merubah atau mengedit data keuangan masjid.');
               return;
             }
             const lastSaldo = keuangan.length > 0 ? keuangan[keuangan.length - 1].saldo : 0;
             const masuk = parseFloat(form.masuk) || 0;
             const keluar = parseFloat(form.keluar) || 0;
-            const saldoBaru = lastSaldo + masuk - kelua;
+            const saldoBaru = lastSaldo + masuk - keluar;
 
             const newData = {
               id: keuangan.length + 1,
@@ -675,13 +675,18 @@
                 <button onClick={downloadCSV} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-800 transition">📥 Download Keuangan (CSV)</button>
               </div>
 
-              {(user.role === 'btm' || user.role === 'super_admin') && (
+              {/* Form Input Keuangan HANYA MUNCUL untuk SUPER ADMIN */}
+              {user.role === 'super_admin' ? (
                 <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-4 bg-emerald-50 rounded-xl border">
                   <input type="date" className="p-2 border rounded text-sm bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} />
                   <input type="text" placeholder="Uraian Transaksi" className="p-2 border rounded text-sm bg-white" value={form.uraian} onChange={(e) => setForm({...form, uraian: e.target.value})} required />
-                  <input type="number" placeholder="Masuk (Rp)" className="p-2 border rounded text-sm bg-white" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
+                  <input type="number" placeholder="Masuk/Keluar (Rp)" className="p-2 border rounded text-sm bg-white" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
                   <button type="submit" className="bg-emerald-700 text-white rounded font-bold text-xs py-2">Tambah Transaksi</button>
                 </form>
+              ) : (
+                <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-lg">
+                  ℹ️ Catatan: Anda login sebagai <strong>{user.role === 'btm' ? 'Pengurus BTM' : 'Jamaah'}</strong>. Sesuai hak akses, Anda dapat melihat dan mendownload laporan keuangan, namun tidak memiliki wewenang untuk mengubah atau menambah data keuangan.
+                </div>
               )}
 
               <div className="overflow-x-auto">
