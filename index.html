@@ -343,6 +343,104 @@
           );
         }
 
+        // --- FITUR KALKULATOR ZAKAT ---
+        function ZakatModule() {
+          const [jenisZakat, setJenisZakat] = useState('penghasilan');
+          const [nominal, setNominal] = useState('');
+          const [jumlahJiwa, setJumlahJiwa] = useState(1);
+          const hargaBerasKg = 15000; // Estimasi harga beras per kg
+
+          const hasilZakat = () => {
+            const val = parseFloat(nominal) || 0;
+            if (jenisZakat === 'penghasilan') {
+              return val >= 6000000 ? val * 0.025 : 0; // Nisab estimasi bulanan
+            } else if (jenisZakat === 'maal') {
+              return val >= 85000000 ? val * 0.025 : 0; // Nisab emas
+            } else {
+              return jumlahJiwa * 2.5 * hargaBerasKg; // 2.5 kg beras per jiwa
+            }
+          };
+
+          return (
+            <div className="bg-white p-6 rounded-xl shadow border space-y-6">
+              <div>
+                <h3 className="text-xl font-bold text-emerald-900">🧮 Kalkulator Zakat Digital</h3>
+                <p className="text-xs text-gray-500">Hitung kewajiban zakat dengan mudah dan transparan.</p>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={() => setJenisZakat('penghasilan')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'penghasilan' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Penghasilan</button>
+                <button onClick={() => setJenisZakat('maal')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'maal' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Maal (Tabungan)</button>
+                <button onClick={() => setJenisZakat('fitrah')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'fitrah' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Fitrah</button>
+              </div>
+
+              <div className="p-5 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-4">
+                {jenisZakat !== 'fitrah' ? (
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
+                      {jenisZakat === 'penghasilan' ? 'Total Penghasilan Bersih per Bulan (Rp)' : 'Total Nilai Harta / Tabungan Tersimpan (Rp)'}
+                    </label>
+                    <input 
+                      type="number" 
+                      placeholder="Masukkan jumlah nominal..." 
+                      value={nominal} 
+                      onChange={(e) => setNominal(e.target.value)}
+                      className="w-full p-3 border rounded-lg text-sm bg-white"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Jumlah Anggota Keluarga yang Dihasilkan (Jiwa)</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value={jumlahJiwa} 
+                      onChange={(e) => setJumlahJiwa(e.target.value)}
+                      className="w-full p-3 border rounded-lg text-sm bg-white"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Standar: 2.5 kg beras per jiwa (Estimasi Rp 15.000/kg)</p>
+                  </div>
+                )}
+
+                <div className="p-4 bg-white rounded-lg border border-emerald-300 shadow-sm">
+                  <p className="text-xs text-gray-500">Estimasi Zakat yang Harus Dikeluarkan:</p>
+                  <p className="text-2xl font-extrabold text-emerald-800 mt-1">
+                    Rp {hasilZakat().toLocaleString('id-ID')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // --- FITUR ARAH KIBLAT DIGITAL ---
+        function KiblatModule() {
+          return (
+            <div className="bg-white p-6 rounded-xl shadow border space-y-6 text-center">
+              <div>
+                <h3 className="text-xl font-bold text-emerald-900">🧭 Arah Kiblat Digital</h3>
+                <p className="text-xs text-gray-500">Panduan posisi dan sudut arah kiblat dari Masjid Al-Muhajirin Wawonasa.</p>
+              </div>
+
+              <div className="p-6 bg-emerald-950 text-white rounded-2xl max-w-md mx-auto space-y-4 shadow-lg border border-emerald-800">
+                <div className="w-28 h-28 mx-auto rounded-full border-4 border-yellow-400 flex items-center justify-center bg-emerald-900 relative shadow-inner">
+                  <div className="absolute w-1.5 h-12 bg-yellow-400 top-2 rounded-full transform -rotate-45 origin-bottom"></div>
+                  <span className="text-xs font-bold text-yellow-300">KA'BAH</span>
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-yellow-400">Lintang & Bujur Lokasi</h4>
+                  <p className="text-xs text-emerald-200 mt-1">Jl. Trans Wawonasa, Manado (1.4931° N, 124.8412° E)</p>
+                </div>
+                <div className="p-3 bg-emerald-900/80 rounded-xl border border-emerald-700">
+                  <p className="text-xs text-emerald-300">Sudut Azimuth Kiblat dari Manado:</p>
+                  <p className="text-xl font-mono font-bold text-white mt-1">291.5° (Barat Laut)</p>
+                </div>
+                <p className="text-[11px] text-emerald-300 italic">Gunakan kompas handphone Anda dan sesuaikan dengan sudut di atas untuk menentukan arah kiblat secara presisi.</p>
+              </div>
+            </div>
+          );
+        }
+
         // --- FITUR DZIKIR & DOA HARIAN + PENCARIAN ---
         function DzikirModule() {
           const [search, setSearch] = useState('');
@@ -443,14 +541,6 @@
           );
         }
 
-        function ZakatModule() {
-          return <div className="bg-white p-6 rounded-xl shadow border"><h3 className="text-xl font-bold text-emerald-900">Kalkulator Zakat Digital</h3></div>;
-        }
-
-        function KiblatModule() {
-          return <div className="bg-white p-6 rounded-xl shadow border"><h3 className="text-xl font-bold text-emerald-900">Arah Kiblat Digital</h3></div>;
-        }
-
         function KeuanganModule({ keuangan }) {
           return (
             <div className="bg-white p-6 rounded-xl shadow border space-y-6">
@@ -492,7 +582,7 @@
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200 text-sm">
                   <thead>
-                    <tr className="bg-emerald-100 text-emerald-900">
+                    <tr className="bg-emerald-100 text-emerald-100 bg-emerald-100 text-emerald-900">
                       <th className="border p-2">Nomor KK</th>
                       <th className="border p-2">Kepala Keluarga</th>
                       <th className="border p-2">No HP</th>
