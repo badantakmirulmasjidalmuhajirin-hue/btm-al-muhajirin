@@ -23,11 +23,25 @@
         const { useState, useEffect } = React;
 
         function App() {
-          const [user, setUser] = useState(null);
+          // --- INISIALISASI STATE DENGAN LOCALSTORAGE ---
+          const [user, setUser] = useState(() => {
+            const savedUser = localStorage.getItem('masjid_user');
+            return savedUser ? JSON.parse(savedUser) : null;
+          });
+
           const [activeMenu, setActiveMenu] = useState('home');
           const [currentTime, setCurrentTime] = useState(new Date());
           const [installPrompt, setInstallPrompt] = useState(null);
           const [showInstallBanner, setShowInstallBanner] = useState(false);
+
+          // Simpan status user ke localStorage setiap kali berubah
+          useEffect(() => {
+            if (user) {
+              localStorage.setItem('masjid_user', JSON.stringify(user));
+            } else {
+              localStorage.removeItem('masjid_user');
+            }
+          }, [user]);
 
           useEffect(() => {
             const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -62,41 +76,62 @@
             }
           };
 
-          // --- STATE DATA UTAMA ---
-          const [keuangan, setKeuangan] = useState([
-            { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, saldo: 5000000 },
-            { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, saldo: 6250000 }
-          ]);
-
-          const [jamaahList, setJamaahList] = useState([
-            { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah', password: '123' }
-          ]);
-
-          const [strukturBTM, setStrukturBTM] = useState({
-            ketua: 'BILAL',
-            wakilKetua1: 'Dra. ASNI VAN GOBEL',
-            wakilKetua2: 'ISMAIL ABDUL',
-            wakilKetua3: '[Nama Wakil Ketua 3]',
-            sekretaris: 'SAHRUL SUBEO',
-            wakilSekretaris1: 'IRWAN ADAM',
-            wakilSekretaris2: 'FAHRI HARAS',
-            bendahara: 'Hj. VONNY MA\'ARUF',
-            wakilBendahara1: 'ROMANTIKA ALI',
-            wakilBendahara2: '[Nama Wakil Bendahara 2]',
-            ketuaPembangunan: 'YUSUP BIDASI',
-            koordinatorIdarah: 'ARSYAD TUE',
-            koordinatorRiyah: 'YUSUP BIDASI',
-            koordinatorImarah: 'BUDHIARTO NIKIULU'
+          // --- STATE DATA UTAMA DENGAN LOCALSTORAGE ---
+          const [keuangan, setKeuangan] = useState(() => {
+            const saved = localStorage.getItem('masjid_keuangan');
+            return saved ? JSON.parse(saved) : [
+              { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, saldo: 5000000 },
+              { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, saldo: 6250000 }
+            ];
           });
+          useEffect(() => { localStorage.setItem('masjid_keuangan', JSON.stringify(keuangan)); }, [keuangan]);
 
-          const [profilMasjid, setProfilMasjid] = useState({
-            nama: 'Masjid Al-Muhajirin Wawonasa',
-            alamat: 'Jl. Trans Wawonasa, Kecamatan Singkil, Kota Manado, Sulawesi Utara',
-            koordinat: '1.4931° N, 124.8412° E (Manado)',
-            logoUrl: 'logo.jpg'
+          const [jamaahList, setJamaahList] = useState(() => {
+            const saved = localStorage.getItem('masjid_jamaahList');
+            return saved ? JSON.parse(saved) : [
+              { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah', password: '123' }
+            ];
           });
+          useEffect(() => { localStorage.setItem('masjid_jamaahList', JSON.stringify(jamaahList)); }, [jamaahList]);
 
-          const [credentialsBTM, setCredentialsBTM] = useState({ user: 'btm_masjid', pass: '2026-2029' });
+          const [strukturBTM, setStrukturBTM] = useState(() => {
+            const saved = localStorage.getItem('masjid_strukturBTM');
+            return saved ? JSON.parse(saved) : {
+              ketua: 'BILAL',
+              wakilKetua1: 'Dra. ASNI VAN GOBEL',
+              wakilKetua2: 'ISMAIL ABDUL',
+              wakilKetua3: '[Nama Wakil Ketua 3]',
+              sekretaris: 'SAHRUL SUBEO',
+              wakilSekretaris1: 'IRWAN ADAM',
+              wakilSekretaris2: 'FAHRI HARAS',
+              bendahara: 'Hj. VONNY MA\'ARUF',
+              wakilBendahara1: 'ROMANTIKA ALI',
+              wakilBendahara2: '[Nama Wakil Bendahara 2]',
+              ketuaPembangunan: 'YUSUP BIDASI',
+              koordinatorIdarah: 'ARSYAD TUE',
+              koordinatorRiyah: 'YUSUP BIDASI',
+              koordinatorImarah: 'BUDHIARTO NIKIULU'
+            };
+          });
+          useEffect(() => { localStorage.setItem('masjid_strukturBTM', JSON.stringify(strukturBTM)); }, [strukturBTM]);
+
+          const [profilMasjid, setProfilMasjid] = useState(() => {
+            const saved = localStorage.getItem('masjid_profilMasjid');
+            return saved ? JSON.parse(saved) : {
+              nama: 'Masjid Al-Muhajirin Wawonasa',
+              alamat: 'Jl. Trans Wawonasa, Kecamatan Singkil, Kota Manado, Sulawesi Utara',
+              koordinat: '1.4931° N, 124.8412° E (Manado)',
+              logoUrl: 'logo.jpg'
+            };
+          });
+          useEffect(() => { localStorage.setItem('masjid_profilMasjid', JSON.stringify(profilMasjid)); }, [profilMasjid]);
+
+          const [credentialsBTM, setCredentialsBTM] = useState(() => {
+            const saved = localStorage.getItem('masjid_credentialsBTM');
+            return saved ? JSON.parse(saved) : { user: 'btm_masjid', pass: '2026-2029' };
+          });
+          useEffect(() => { localStorage.setItem('masjid_credentialsBTM', JSON.stringify(credentialsBTM)); }, [credentialsBTM]);
+
           const [credentialsSuper, setCredentialsSuper] = useState({ user: 'super_admin', pass: '2026-2029' });
 
           const handleLogin = (username, password) => {
@@ -1025,7 +1060,7 @@
             const masuk = parseFloat(form.masuk) || 0;
             const keluar = parseFloat(form.keluar) || 0;
             const newData = {
-              id: keuangan.length + 1,
+              id: Date.now(), // Menggunakan timestamp agar ID unik
               tanggal: form.tanggal || new Date().toISOString().split('T')[0],
               uraian: form.uraian,
               masuk, keluar,
