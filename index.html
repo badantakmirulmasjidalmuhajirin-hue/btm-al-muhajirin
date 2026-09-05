@@ -80,8 +80,8 @@
           const [keuangan, setKeuangan] = useState(() => {
             const saved = localStorage.getItem('masjid_keuangan');
             return saved ? JSON.parse(saved) : [
-              { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, saldo: 5000000 },
-              { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, saldo: 6250000 }
+              { id: 1, tanggal: '2026-06-01', uraianMasuk: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, uraianKeluar: '-', saldo: 5000000 },
+              { id: 2, tanggal: '2026-06-05', uraianMasuk: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, uraianKeluar: '-', saldo: 6250000 }
             ];
           });
           useEffect(() => { localStorage.setItem('masjid_keuangan', JSON.stringify(keuangan)); }, [keuangan]);
@@ -1046,35 +1046,100 @@
           );
         }
 
-        // --- MODUL KEUANGAN ---
+        // --- MODUL KEUANGAN (DENGAN HAK AKSES SUPER ADMIN: TAMBAH, EDIT, HAPUS) ---
         function KeuanganModule({ keuangan, setKeuangan, user }) {
-          const [form, setForm] = useState({ tanggal: '', uraian: '', masuk: 0, keluar: 0 });
+          const [form, setForm] = useState({ tanggal: '', uraianMasuk: '', masuk: 0, keluar: 0, uraianKeluar: '' });
+          const [editId, setEditId] = useState(null); // Menyimpan ID transaksi yang sedang diedit
 
-          const handleAdd = (e) => {
+          // Fungsi untuk menghitung ulang saldo secara otomatis berdasarkan urutan transaksi
+          const recalculateSaldo = (list) => {
+            let currentSaldo = 0;
+            return list.map(item => {
+              const masuk = parseFloat(item.masuk) || 0;
+              const keluar = parseFloat(item.keluar) || 0;
+              currentSaldo = currentSaldo + masuk - keluar;
+              return { ...item, saldo: currentSaldo };
+            });
+          };
+
+          const handleSaveKeuangan = (e) => {
             e.preventDefault();
             if (user.role !== 'super_admin') {
-              alert('Akses Ditolak! Hanya Super Admin yang dapat menambah data keuangan.');
+              alert('Akses Ditolak! Hanya Super Admin yang dapat mengelola data keuangan.');
               return;
             }
-            const lastSaldo = keuangan.length > 0 ? keuangan[keuangan.length - 1].saldo : 0;
+
             const masuk = parseFloat(form.masuk) || 0;
             const keluar = parseFloat(form.keluar) || 0;
-            const newData = {
-              id: Date.now(), // Menggunakan timestamp agar ID unik
-              tanggal: form.tanggal || new Date().toISOString().split('T')[0],
-              uraian: form.uraian,
-              masuk, keluar,
-              saldo: lastSaldo + masuk - keluar
-            };
-            setKeuangan([...keuangan, newData]);
-            setForm({ tanggal: '', uraian: '', masuk: 0, keluar: 0 });
-            alert('Transaksi berhasil ditambahkan.');
+            const tanggal = form.tanggal || new Date().toISOString().split('T')[0];
+            const uraianMasuk = form.uraianMasuk.trim() || '-';
+            const uraianKeluar = form.uraianKeluar.trim() || '-';
+
+            if (editId !== null) {
+              // Mode Edit / Perbarui Data Keuangan
+              const updated = keuangan.map(item => {
+                if (item.id === editId) {
+                  return {
+                    ...item,
+                    tanggal,
+                    uraianMasuk,
+                    masuk,
+                    keluar,
+                    uraianKeluar
+                  };
+                }
+                return item;
+              });
+              setKeuangan(recalculateSaldo(updated));
+              setEditId(null);
+              alert('Data keuangan berhasil diperbarui.');
+            } else {
+              // Mode Tambah Data Keuangan Baru
+              const newData = {
+                id: Date.now(),
+                tanggal,
+                uraianMasuk,
+                masuk,
+                keluar,
+                uraianKeluar,
+                saldo: 0 // Akan dihitung ulang oleh fungsi recalculateSaldo
+              };
+              setKeuangan(recalculateSaldo([...keuangan, newData]));
+              alert('Transaksi keuangan berhasil ditambahkan.');
+            }
+
+            setForm({ tanggal: '', uraianMasuk: '', masuk: 0, keluar: 0, uraianKeluar: '' });
+          };
+
+          const handleEditClick = (item) => {
+            if (user.role !== 'super_admin') return;
+            setForm({
+              tanggal: item.tanggal,
+              uraianMasuk: item.uraianMasuk || '',
+              masuk: item.masuk,
+              keluar: item.keluar,
+              uraianKeluar: item.uraianKeluar || ''
+            });
+            setEditId(item.id);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+
+          const handleDeleteKeuangan = (id) => {
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak! Hanya Super Admin yang dapat menghapus data keuangan.');
+              return;
+            }
+            if (confirm('Apakah Anda yakin ingin menghapus data keuangan ini?')) {
+              const filtered = keuangan.filter(item => item.id !== id);
+              setKeuangan(recalculateSaldo(filtered));
+              alert('Data keuangan berhasil dihapus.');
+            }
           };
 
           const downloadCSV = () => {
-            let csvContent = "No,Tanggal,Uraian,Masuk,Keluar,Saldo\n";
+            let csvContent = "No,Hari/Tanggal,Uraian Pemasukan,Uang Masuk,Uang Keluar,Uraian Uang Keluar,Saldo\n";
             keuangan.forEach((item, idx) => {
-              csvContent += `${idx+1},${item.tanggal},"${item.uraian}",${item.masuk},${item.keluar},${item.saldo}\n`;
+              csvContent += `${idx+1},${item.tanggal},"${item.uraianMasuk || '-'}",${item.masuk},${item.keluar},"${item.uraianKeluar || '-'}",${item.saldo}\n`;
             });
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1094,11 +1159,25 @@
               </div>
 
               {user.role === 'super_admin' && (
-                <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-4 gap-2 p-3 bg-emerald-50 rounded-xl border">
-                  <input type="date" className="p-1.5 border rounded text-xs bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} />
-                  <input type="text" placeholder="Uraian Transaksi" className="p-1.5 border rounded text-xs bg-white" value={form.uraian} onChange={(e) => setForm({...form, uraian: e.target.value})} required />
-                  <input type="number" placeholder="Masuk/Keluar (Rp)" className="p-1.5 border rounded text-xs bg-white" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
-                  <button type="submit" className="bg-emerald-700 text-white rounded font-bold text-xs py-1.5">Tambah</button>
+                <form onSubmit={handleSaveKeuangan} className="p-3 bg-emerald-50 rounded-xl border space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-bold text-emerald-900 text-xs">
+                      {editId !== null ? '✏️ Ubah Data Keuangan' : '➕ Tambah Transaksi Keuangan'}
+                    </h4>
+                    {editId !== null && (
+                      <button type="button" onClick={() => { setEditId(null); setForm({ tanggal: '', uraianMasuk: '', masuk: 0, keluar: 0, uraianKeluar: '' }); }} className="text-[10px] text-red-600 font-bold">Batal Edit</button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
+                    <input type="date" className="p-1.5 border rounded text-xs bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} />
+                    <input type="text" placeholder="Uraian Pemasukan" className="p-1.5 border rounded text-xs bg-white" value={form.uraianMasuk} onChange={(e) => setForm({...form, uraianMasuk: e.target.value})} />
+                    <input type="number" placeholder="Uang Masuk (Rp)" className="p-1.5 border rounded text-xs bg-white" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
+                    <input type="number" placeholder="Uang Keluar (Rp)" className="p-1.5 border rounded text-xs bg-white" value={form.keluar} onChange={(e) => setForm({...form, keluar: e.target.value})} />
+                    <input type="text" placeholder="Uraian Uang Keluar" className="p-1.5 border rounded text-xs bg-white" value={form.uraianKeluar} onChange={(e) => setForm({...form, uraianKeluar: e.target.value})} />
+                  </div>
+                  <button type="submit" className="w-full bg-emerald-700 text-white rounded font-bold text-xs py-1.5">
+                    {editId !== null ? 'Perbarui Transaksi' : 'Simpan Transaksi'}
+                  </button>
                 </form>
               )}
 
@@ -1107,24 +1186,35 @@
                   <thead>
                     <tr className="bg-emerald-100 text-emerald-900">
                       <th className="border p-1.5">No</th>
-                      <th className="border p-1.5">Tanggal</th>
-                      <th className="border p-1.5">Uraian</th>
-                      <th className="border p-1.5">Masuk</th>
-                      <th className="border p-1.5">Keluar</th>
+                      <th className="border p-1.5">Hari/Tanggal</th>
+                      <th className="border p-1.5">Uraian Pemasukan</th>
+                      <th className="border p-1.5">Uang Masuk</th>
+                      <th className="border p-1.5">Uang Keluar</th>
+                      <th className="border p-1.5">Uraian Uang Keluar</th>
                       <th className="border p-1.5">Saldo</th>
+                      {user.role === 'super_admin' && <th className="border p-1.5">Aksi</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {keuangan.map((item, idx) => (
+                    {keuangan.length > 0 ? keuangan.map((item, idx) => (
                       <tr key={item.id} className="text-center">
                         <td className="border p-1.5">{idx + 1}</td>
                         <td className="border p-1.5">{item.tanggal}</td>
-                        <td className="border p-1.5 text-left">{item.uraian}</td>
+                        <td className="border p-1.5 text-left">{item.uraianMasuk || '-'}</td>
                         <td className="border p-1.5 text-green-600 font-semibold">Rp {item.masuk.toLocaleString()}</td>
                         <td className="border p-1.5 text-red-600 font-semibold">Rp {item.keluar.toLocaleString()}</td>
+                        <td className="border p-1.5 text-left">{item.uraianKeluar || '-'}</td>
                         <td className="border p-1.5 font-bold">Rp {item.saldo.toLocaleString()}</td>
+                        {user.role === 'super_admin' && (
+                          <td className="border p-1.5 space-x-1 whitespace-nowrap">
+                            <button onClick={() => handleEditClick(item)} className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-blue-700">Edit</button>
+                            <button onClick={() => handleDeleteKeuangan(item.id)} className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-red-700">Hapus</button>
+                          </td>
+                        )}
                       </tr>
-                    ))}
+                    )) : (
+                      <tr><td colSpan={user.role === 'super_admin' ? "8" : "7"} className="p-3 text-center text-gray-500 text-xs">Belum ada data keuangan.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>
