@@ -481,9 +481,13 @@
           );
         }
 
-        // --- MODUL QURAN (LENGKAP 30 JUZ & 114 SURAH) ---
+        // --- MODUL QURAN (LENGKAP 30 JUZ & 114 SURAH DENGAN PEMBACAAN AYAT & AUDIO) ---
         function QuranModule() {
           const [search, setSearch] = useState('');
+          const [selectedSurah, setSelectedSurah] = useState(null);
+          const [ayahs, setAyahs] = useState([]);
+          const [loadingAyahs, setLoadingAyahs] = useState(false);
+
           const daftarSurah114 = [
             { no: 1, nama: 'Al-Fatihah', arti: 'Pembukaan', ayat: 7, juz: 1, arab: 'الفاتحة' },
             { no: 2, nama: 'Al-Baqarah', arti: 'Sapi Betina', ayat: 286, juz: '1 - 3', arab: 'البقرة' },
@@ -601,6 +605,32 @@
             { no: 114, nama: 'An-Nas', arti: 'Manusia', ayat: 6, juz: 30, arab: 'الناس' }
           ];
 
+          const handleSelectSurah = (surah) => {
+            setSelectedSurah(surah);
+            setLoadingAyahs(true);
+            // Mengambil ayat dan terjemahan bahasa Indonesia dari API publik
+            fetch(`https://api.alquran.cloud/v1/surah/${surah.no}/editions/quran-uthmani,id.indonesian`)
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.data) {
+                  const arabicAyahs = data.data[0].ayahs;
+                  const indoAyahs = data.data[1].ayahs;
+                  const combined = arabicAyahs.map((item, index) => ({
+                    numberInSurah: item.numberInSurah,
+                    text: item.text,
+                    translation: indoAyahs[index] ? indoAyahs[index].text : '',
+                    audio: item.audio || ''
+                  }));
+                  setAyahs(combined);
+                }
+                setLoadingAyahs(false);
+              })
+              .catch(() => {
+                alert('Gagal memuat ayat Al-Quran. Periksa koneksi internet Anda.');
+                setLoadingAyahs(false);
+              });
+          };
+
           const filtered = daftarSurah114.filter(s => 
             s.nama.toLowerCase().includes(search.toLowerCase()) || 
             s.arti.toLowerCase().includes(search.toLowerCase()) || 
@@ -610,40 +640,82 @@
 
           return (
             <div className="bg-white p-6 rounded-xl shadow border space-y-6">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                  <h3 className="text-xl font-bold text-emerald-900">📖 Al-Quran Digital (30 Juz & 114 Surah Lengkap)</h3>
-                  <p className="text-xs text-gray-500">Daftar lengkap seluruh surah Al-Quran dari Al-Fatihah hingga An-Nas.</p>
-                </div>
-                <input 
-                  type="text" 
-                  placeholder="Cari Surah / Arti / No Juz..." 
-                  value={search} 
-                  onChange={(e) => setSearch(e.target.value)} 
-                  className="w-full md:w-80 p-2.5 border border-emerald-300 rounded-lg text-sm" 
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[550px] overflow-y-auto pr-2">
-                {filtered.length > 0 ? filtered.map((surah) => (
-                  <div key={surah.no} className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200 flex justify-between items-center shadow-sm hover:bg-emerald-100/50 transition">
+              {!selectedSurah ? (
+                <>
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="w-7 h-7 bg-emerald-700 text-white rounded-full flex items-center justify-center text-xs font-bold">{surah.no}</span>
-                        <h4 className="font-bold text-emerald-950 text-sm">{surah.nama}</h4>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1">Arti: {surah.arti}</p>
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-semibold">{surah.ayat} Ayat</span>
-                        <span className="text-[10px] bg-yellow-200 text-yellow-900 px-1.5 py-0.5 rounded font-semibold">Juz {surah.juz}</span>
-                      </div>
+                      <h3 className="text-xl font-bold text-emerald-900">📖 Al-Quran Digital (30 Juz & 114 Surah Lengkap)</h3>
+                      <p className="text-xs text-gray-500">Klik salah satu surah di bawah untuk membaca teks Arab, terjemahan, dan mendengarkan audio per ayat.</p>
                     </div>
-                    <span className="text-xl font-bold text-emerald-900 font-serif">{surah.arab}</span>
+                    <input 
+                      type="text" 
+                      placeholder="Cari Surah / Arti / No Juz..." 
+                      value={search} 
+                      onChange={(e) => setSearch(e.target.value)} 
+                      className="w-full md:w-80 p-2.5 border border-emerald-300 rounded-lg text-sm" 
+                    />
                   </div>
-                )) : (
-                  <div className="col-span-3 text-center py-8 text-gray-500 text-sm">Surah tidak ditemukan.</div>
-                )}
-              </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[550px] overflow-y-auto pr-2">
+                    {filtered.length > 0 ? filtered.map((surah) => (
+                      <div 
+                        key={surah.no} 
+                        onClick={() => handleSelectSurah(surah)}
+                        className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200 flex justify-between items-center shadow-sm hover:bg-emerald-100 transition cursor-pointer"
+                      >
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="w-7 h-7 bg-emerald-700 text-white rounded-full flex items-center justify-center text-xs font-bold">{surah.no}</span>
+                            <h4 className="font-bold text-emerald-950 text-sm">{surah.nama}</h4>
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">Arti: {surah.arti}</p>
+                          <div className="flex gap-2 mt-2">
+                            <span className="text-[10px] bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded font-semibold">{surah.ayat} Ayat</span>
+                            <span className="text-[10px] bg-yellow-200 text-yellow-900 px-1.5 py-0.5 rounded font-semibold">Juz {surah.juz}</span>
+                          </div>
+                        </div>
+                        <span className="text-xl font-bold text-emerald-900 font-serif">{surah.arab}</span>
+                      </div>
+                    )) : (
+                      <div className="col-span-3 text-center py-8 text-gray-500 text-sm">Surah tidak ditemukan.</div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center pb-4 border-b">
+                    <div>
+                      <button onClick={() => setSelectedSurah(null)} className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-1.5 rounded-lg mb-2 transition">
+                        ← Kembali ke Daftar Surah
+                      </button>
+                      <h3 className="text-2xl font-bold text-emerald-900">{selectedSurah.no}. {selectedSurah.nama} ({selectedSurah.arab})</h3>
+                      <p className="text-xs text-gray-500">Arti: {selectedSurah.arti} | Jumlah Ayat: {selectedSurah.ayat}</p>
+                    </div>
+                  </div>
+
+                  {loadingAyahs ? (
+                    <div className="text-center py-12 text-emerald-800 font-semibold text-sm">Sedang memuat ayat-ayat Al-Quran...</div>
+                  ) : (
+                    <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                      {ayahs.map((ayah) => (
+                        <div key={ayah.numberInSurah} className="p-4 bg-emerald-50/40 rounded-xl border border-emerald-200 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="w-7 h-7 bg-emerald-700 text-white rounded-full flex items-center justify-center text-xs font-bold">{ayah.numberInSurah}</span>
+                            {ayah.audio && (
+                              <audio controls className="h-8">
+                                <source src={ayah.audio} type="audio/mp3" />
+                                Browser Anda tidak mendukung pemutar audio.
+                              </audio>
+                            )}
+                          </div>
+                          <p className="text-2xl text-right font-serif text-emerald-950 leading-loose">{ayah.text}</p>
+                          <p className="text-xs text-gray-700 leading-relaxed"><strong>Artinya:</strong> {ayah.translation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           );
         }
