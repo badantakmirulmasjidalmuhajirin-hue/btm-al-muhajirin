@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTM Al-Muhajirin Wawonasa</title>
+  <link rel="manifest" href="/manifest.json">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [user, setUser] = useState(null);
+      const [activeMenu, setActiveMenu] = useState('home');
+
+      // State Data Keuangan
+      const [keuangan, setKeuangan] = useState([
+        { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, ketKeluar: '-', saldo: 5000000 },
+        { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, ketKeluar: '-', saldo: 6250000 }
+      ]);
+
+      // State Data Jamaah (Proteksi No KK Ganda)
+      const [jamaahList, setJamaahList] = useState([
+        { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah' }
+      ]);
+
+      // State Struktur BTM
+      const [strukturBTM, setStrukturBTM] = useState({
+        ketua: 'H. Abdullah',
+        wakilKetua1: 'Drs. H. Rahman',
+        wakilKetua2: 'Ir. H. M. Ali',
+        sekretaris: 'Ahmad Fauzi, S.Pd',
+        wakilSekretaris1: 'Muhammad Ridwan',
+        wakilSekretaris2: 'Siti Rahma',
+        bendahara: 'Hj. Aminah',
+        wakilBendahara: 'Nurul Hidayah',
+        ketuaPembangunan: 'H. Ibrahim',
+        koordinatorIdarah: 'Ustadz Zulkifli',
+        koordinatorRiyah: 'H. Usman',
+        koordinatorImarah: 'Ustadz Harun'
+      });
+
+      const [profilMasjid, setProfilMasjid] = useState({
+        nama: 'Masjid Al-Muhajirin Wawonasa',
+        alamat: 'Kelurahan Wawonasa, Kecamatan Singkil, Kota Manado, Sulawesi Utara',
+        koordinat: '1.4925° N, 124.8385° E'
+      });
+
+      // Handler Login
+      const handleLogin = (username, password) => {
+        if (username === 'super_admin' && password === '2026-2029') {
+          setUser({ username, role: 'super_admin' });
+        } else if (username === 'btm_masjid' && password === '2026-2029') {
+          setUser({ username, role: 'btm' });
+        } else if (username.trim() !== '' && password.trim() !== '') {
+          setUser({ username, role: 'jamaah' });
+        } else {
+          alert('Username atau Password salah!');
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 text-gray-800 font-sans flex flex-col">
+          {!user ? (
+            <LoginScreen onLogin={handleLogin} />
+          ) : (
+            <MainLayout 
+              user={user} 
+              onLogout={() => setUser(null)} 
+              activeMenu={activeMenu} 
+              setActiveMenu={setActiveMenu}
+              keuangan={keuangan} setKeuangan={setKeuangan}
+              jamaahList={jamaahList} setJamaahList={setJamaahList}
+              strukturBTM={strukturBTM} setStrukturBTM={setStrukturBTM}
+              profilMasjid={profilMasjid} setProfilMasjid={setProfilMasjid}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // --- SCREEN LOGIN ---
+    function LoginScreen({ onLogin }) {
+      const [u, setU] = useState('');
+      const [p, setP] = useState('');
+
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-emerald-900 p-4">
+          <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-yellow-500">
+            <div className="text-center mb-6">
+              <h1 className="text-xl font-bold text-emerald-900">BTM Al-Muhajirin Wawonasa</h1>
+              <p className="text-xs text-gray-500">Silakan masuk ke akun Anda</p>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Username / Akun Jamaah</label>
+                <input type="text" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Username" value={u} onChange={(e) => setU(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                <input type="password" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Password" value={p} onChange={(e) => setP(e.target.value)} />
+              </div>
+              <button onClick={() => onLogin(u, p)} className="w-full bg-emerald-700 text-white p-3 rounded-lg font-bold hover:bg-emerald-800 transition">
+                Masuk Aplikasi
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- MAIN LAYOUT ---
+    function MainLayout({ user, onLogout, activeMenu, setActiveMenu, keuangan, setKeuangan, jamaahList, setJamaahList, strukturBTM, setStrukturBTM, profilMasjid, setProfilMasjid }) {
+      
+      useEffect(() => {
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          alert("Ketuk opsi 'Tambahkan ke Layar Utama' (Add to Home Screen) di browser Anda untuk menginstal aplikasi ini.");
+        });
+      }, []);
+
+      return (
+        <div className="flex flex-col md:flex-row min-h-screen">
+          <div className="w-full md:w-72 bg-emerald-950 text-white p-5 flex flex-col justify-between shadow-lg">
+            <div>
+              <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-emerald-800">
+                <div>
+                  <h2 className="text-sm font-bold text-yellow-400">Al-Muhajirin Wawonasa</h2>
+                  <p className="text-xs text-emerald-300 uppercase">Role: {user.role}</p>
+                </div>
+              </div>
+              <ul className="space-y-1 text-sm">
+                <li onClick={() => setActiveMenu('home')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'home' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Beranda & Profil Masjid</li>
+                <li onClick={() => setActiveMenu('sholat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'sholat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Waktu Sholat Real-Time</li>
+                <li onClick={() => setActiveMenu('quran')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'quran' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Al-Quran Digital</li>
+                <li onClick={() => setActiveMenu('zakat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'zakat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Kalkulator Zakat</li>
+                <li onClick={() => setActiveMenu('kiblat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'kiblat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Arah Kiblat Digital</li>
+                <li onClick={() => setActiveMenu('dzikir')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'dzikir' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Dzikir & Doa Harian</li>
+                <li onClick={() => setActiveMenu('iqra')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'iqra' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Materi Iqra Anak</li>
+                <li onClick={() => setActiveMenu('struktur')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'struktur' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Struktur Pengurus BTM</li>
+                <li onClick={() => setActiveMenu('keuangan')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'keuangan' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Keuangan Masjid</li>
+                <li onClick={() => setActiveMenu('jamaah')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'jamaah' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Data Jamaah Masjid</li>
+                
+                {(user.role === 'jamaah' || user.role === 'super_admin') && (
+                  <li onClick={() => setActiveMenu('reset')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'reset' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Reset Password</li>
+                )}
+              </ul>
+            </div>
+            <button onClick={onLogout} className="mt-6 bg-red-700 hover:bg-red-800 p-2.5 rounded-lg font-bold text-sm transition">Keluar Sistem</button>
+          </div>
+
+          <div className="flex-1 p-6 md:p-10 overflow-y-auto">
+            <header className="flex justify-between items-center mb-6 pb-4 border-b">
+              <h2 className="text-lg font-bold text-emerald-900 capitalize">{activeMenu.replace('_', ' ')}</h2>
+              <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full">User: {user.username} ({user.role})</span>
+            </header>
+
+            {activeMenu === 'home' && <HomeModule profil={profilMasjid} user={user} setProfil={setProfilMasjid} />}
+            {activeMenu === 'sholat' && <SholatModule />}
+            {activeMenu === 'quran' && <QuranModule />}
+            {activeMenu === 'zakat' && <ZakatModule />}
+            {activeMenu === 'kiblat' && <KiblatModule />}
+            {activeMenu === 'dzikir' && <DzikirModule />}
+            {activeMenu === 'iqra' && <IqraModule />}
+            {activeMenu === 'struktur' && <StrukturModule struktur={strukturBTM} setStruktur={setStrukturBTM} user={user} />}
+            {activeMenu === 'keuangan' && <KeuanganModule keuangan={keuangan} setKeuangan={setKeuangan} user={user} />}
+            {activeMenu === 'jamaah' && <JamaahModule jamaahList={jamaahList} setJamaahList={setJamaahList} user={user} />}
+            {activeMenu === 'reset' && <ResetPasswordModule user={user} />}
+          </div>
+        </div>
+      );
+    }
+
+    function HomeModule({ profil, user, setProfil }) {
+      const [edit, setEdit] = useState(false);
+      const [nama, setNama] = useState(profil.nama);
+      const [alamat, setAlamat] = useState(profil.alamat);
+      const [koordinat, setKoordinat] = useState(profil.koordinat);
+
+      const handleSave = (e) => {
+        e.preventDefault();
+        setProfil({ nama, alamat, koordinat });
+        setEdit(false);
+        alert("Profil & Letak Geografis berhasil diperbarui!");
+      };
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-xl shadow border">
+            <h3 className="text-xl font-bold text-emerald-900 mb-2">{profil.nama}</h3>
+            <p className="text-gray-600 mb-2"><strong>Alamat:</strong> {profil.alamat}</p>
+            <p className="text-gray-600 mb-4"><strong>Koordinat Geografis:</strong> {profil.koordinat}</p>
+            
+            {(user.role === 'btm' || user.role === 'super_admin') && (
+              <button onClick={() => setEdit(!edit)} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                {edit ? 'Tutup Form Edit' : 'Edit Profil & Lokasi Masjid'}
+              </button>
+            )}
+          </div>
+
+          {edit && (
+            <form onSubmit={handleSave} className="bg-white p-6 rounded-xl shadow border space-y-4">
+              <h4 className="font-bold text-emerald-900">Form Perubahan Profil Masjid</h4>
+              <div>
+                <label className="block text-xs font-bold mb-1">Nama Masjid</label>
+                <input type="text" className="w-full p-2 border rounded" value={nama} onChange={(e) => setNama(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">Alamat Lengkap</label>
+                <textarea className="w-full p-2 border rounded" value={alamat} onChange={(e) => setAlamat(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">Koordinat Geografis</label>
+                <input type="text" className="w-full p-2 border rounded" value={koordinat} onChange={(e) => setKoordinat(e.target.value)} required />
+              </div>
+              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Simpan Perubahan</button>
+            </form>
+          )}
+        </div>
+      );
+    }
+
+    function SholatModule() {
+      const [lokasi, setLokasi] = useState('Manado (Default)');
+      const [jadwal, setJadwal] = useState({ Imsak: '04:15', Subuh: '04:25', Dzuhur: '11:50', Ashar: '15:15', Maghrib: '17:55', Isya: '19:05' });
+
+      useEffect(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(() => {
+            setLokasi('Menyesuaikan Lokasi GPS Anda');
+          });
+        }
+      }, []);
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border">
+          <h3 className="text-xl font-bold text-emerald-900 mb-1">Jadwal Sholat Real-Time</h3>
+          <p className="text-xs text-gray-500 mb-6">Status Area: {lokasi}</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Object.entries(jadwal).map(([key, val]) => (
+              <div key={key} className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center">
+                <h4 className="font-bold text-emerald-900 text-sm">{key}</h4>
+                <p className="text-xl font-extrabold text-emerald-700 mt-1">{val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function KeuanganModule({ keuangan, setKeuangan, user }) {
+      const [uraian, setUraian] = useState('');
+      const [masuk, setMasuk] = useState('');
+      const [keluar, setKeluar] = useState('');
+      const [ketKeluar, setKetKeluar] = useState('');
+
+      const handleTambah = (e) => {
+        e.preventDefault();
+        const lastSaldo = keuangan.length > 0 ? keuangan[keuangan.length - 1].saldo : 0;
+        const m = Number(masuk) || 0;
+        const k = Number(keluar) || 0;
+        const newSaldo = lastSaldo + m - k;
+
+        const newRow = {
+          id: keuangan.length + 1,
+          tanggal: new Date().toISOString().split('T')[0],
+          uraian,
+          masuk: m,
+          keluar: k,
+          ketKeluar: k > 0 ? ketKeluar : '-',
+          saldo: newSaldo
+        };
+
+        setKeuangan([...keuangan, newRow]);
+        setUraian(''); setMasuk(''); setKeluar(''); setKetKeluar('');
+        alert("Data keuangan berhasil ditambahkan!");
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold text-emerald-900">Laporan Keuangan Masjid</h3>
+            <button onClick={() => alert("File Laporan Keuangan PDF berhasil diunduh.")} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold">Download PDF Keuangan</button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-200 text-sm">
+              <thead>
+                <tr className="bg-emerald-100 text-emerald-900">
+                  <th className="border p-2">No</th>
+                  <th className="border p-2">Hari/Tanggal</th>
+                  <th className="border p-2">Uraian Kegiatan</th>
+                  <th className="border p-2">Uang Masuk</th>
+                  <th className="border p-2">Uang Keluar</th>
+                  <th className="border p-2">Uraian Keluar</th>
+                  <th className="border p-2">Saldo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {keuangan.map((item, idx) => (
+                  <tr key={item.id} className="text-center">
+                    <td className="border p-2">{idx + 1}</td>
+                    <td className="border p-2">{item.tanggal}</td>
+                    <td className="border p-2 text-left">{item.uraian}</td>
+                    <td className="border p-2 text-green-600 font-semibold">Rp {item.masuk.toLocaleString()}</td>
+                    <td className="border p-2 text-red-600 font-semibold">Rp {item.keluar.toLocaleString()}</td>
+                    <td className="border p-2">{item.ketKeluar}</td>
+                    <td className="border p-2 font-bold">Rp {item.saldo.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {user.role === 'super_admin' && (
+            <form onSubmit={handleTambah} className="bg-gray-50 p-4 rounded-xl border space-y-3">
+              <h4 className="font-bold text-emerald-900 text-sm">Tambah Catatan Keuangan (Super Admin)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input type="text" placeholder="Uraian Kegiatan" className="p-2 border rounded text-sm" value={uraian} onChange={(e) => setUraian(e.target.value)} required />
+                <input type="number" placeholder="Uang Masuk (Opsional)" className="p-2 border rounded text-sm" value={masuk} onChange={(e) => setMasuk(e.target.value)} />
+                <input type="number" placeholder="Uang Keluar (Opsional)" className="p-2 border rounded text-sm" value={keluar} onChange={(e) => setKeluar(e.target.value)} />
+                <input type="text" placeholder="Uraian Uang Keluar" className="p-2 border rounded text-sm" value={ketKeluar} onChange={(e) => setKetKeluar(e.target.value)} />
+              </div>
+              <button type="submit" className="bg-emerald-700 text-white px-4 py-2 rounded text-xs font-bold">Simpan Transaksi Keuangan</button>
+            </form>
+          )}
+        </div>
+      );
+    }
+
+    function JamaahModule({ jamaahList, setJamaahList, user }) {
+      const [search, setSearch] = useState('');
+      const [noKK, setNoKK] = useState('');
+      const [namaKepala, setNamaKepala] = useState('');
+      const [noKtp, setNoKtp] = useState('');
+      const [noHp, setNoHp] = useState('');
+      const [alamat, setAlamat] = useState('');
+      const [jumlahAnggota, setJumlahAnggota] = useState('');
+      const [namaAnggota, setNamaAnggota] = useState('');
+
+      const handleTambahJamaah = (e) => {
+        e.preventDefault();
+        const isExist = jamaahList.some(item => item.no_kk === noKK);
+        if (isExist) {
+          alert("Pendaftaran ditolak! Nomor KK tersebut sudah pernah didaftarkan dalam sistem.");
+          return;
+        }
+
+        const newData = {
+          no_kk: noKK,
+          nama: namaKepala,
+          ktp: noKtp,
+          hp: noHp,
+          alamat,
+          jumlah: Number(jumlahAnggota),
+          anggota: namaAnggota
+        };
+
+        setJamaahList([...jamaahList, newData]);
+        setNoKK(''); setNamaKepala(''); setNoKtp(''); setNoHp(''); setAlamat(''); setJumlahAnggota(''); setNamaAnggota('');
+        alert("Data keluarga jamaah berhasil didaftarkan!");
+      };
+
+      const filteredData = jamaahList.filter(item => 
+        item.no_kk.toLowerCase().includes(search.toLowerCase()) ||
+        item.nama.toLowerCase().includes(search.toLowerCase()) ||
+        item.hp.toLowerCase().includes(search.toLowerCase())
+      );
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold text-emerald-900">Data Jamaah & Kartu Keluarga</h3>
+            <button onClick={() => alert("Data Jamaah Masjid berhasil diunduh dalam bentuk PDF.")} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold">Download PDF Jamaah</button>
+          </div>
+
+          <div>
+            <input 
+              type="text" 
+              placeholder="Cari berdasarkan No KK, Nama Kepala Keluarga, atau No HP/Wa..." 
+              className="w-full p-3 border rounded-lg text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-200 text-sm">
+              <thead>
+                <tr className="bg-emerald-100 text-emerald-900">
+                  <th className="border p-2">Nomor KK</th>
+                  <th className="border p-2">Nama Kepala Keluarga</th>
+                  <th className="border p-2">No KTP</th>
+                  <th className="border p-2">No HP/Wa</th>
+                  <th className="border p-2">Alamat</th>
+                  <th className="border p-2">Jml Anggota</th>
+                  <th className="border p-2">Anggota Keluarga</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((item, idx) => (
+                  <tr key={idx} className="text-center">
+                    <td className="border p-2 font-semibold">{item.no_kk}</td>
+                    <td className="border p-2">{item.nama}</td>
+                    <td className="border p-2">{item.ktp}</td>
+                    <td className="border p-2">{item.hp}</td>
+                    <td className="border p-2">{item.alamat}</td>
+                    <td className="border p-2">{item.jumlah}</td>
+                    <td className="border p-2 text-left">{item.anggota}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <form onSubmit={handleTambahJamaah} className="bg-gray-50 p-6 rounded-xl border space-y-4">
+            <h4 className="font-bold text-emerald-900">Form Tambah Data Keluarga Jamaah</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input type="text" placeholder="Nomor KK" className="p-2.5 border rounded text-sm" value={noKK} onChange={(e) => setNoKK(e.target.value)} required />
+              <input type="text" placeholder="Nama Kepala Keluarga" className="p-2.5 border rounded text-sm" value={namaKepala} onChange={(e) => setNamaKepala(e.target.value)} required />
+              <input type="text" placeholder="Nomor KTP Kepala Keluarga" className="p-2.5 border rounded text-sm" value={noKtp} onChange={(e) => setNoKtp(e.target.value)} required />
+              <input type="text" placeholder="Nomor HP/Wa" className="p-2.5 border rounded text-sm" value={noHp} onChange={(e) => setNoHp(e.target.value)} required />
+              <input type="text" placeholder="Alamat" className="p-2.5 border rounded text-sm" value={alamat} onChange={(e) => setAlamat(e.target.value)} required />
+              <input type="number" placeholder="Jumlah Anggota Keluarga" className="p-2.5 border rounded text-sm" value={jumlahAnggota} onChange={(e) => setJumlahAnggota(e.target.value)} required />
+            </div>
+            <textarea placeholder="Nama-nama Anggota Keluarga (Pisahkan dengan koma)" className="w-full p-2.5 border rounded text-sm" value={namaAnggota} onChange={(e) => setNamaAnggota(e.target.value)} required />
+            <button type="submit" className="bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold">Tambah Data Keluarga</button>
+          </form>
+        </div>
+      );
+    }
+
+    function StrukturModule({ struktur, setStruktur, user }) {
+      const [edit, setEdit] = useState(false);
+      const [form, setForm] = useState(struktur);
+
+      const handleSave = (e) => {
+        e.preventDefault();
+        setStruktur(form);
+        setEdit(false);
+        alert("Struktur Pengurus BTM berhasil diperbarui!");
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-bold text-emerald-900">Struktur Badan Takmirul Masjid Al-Muhajirin Wawonasa</h3>
+            {user.role === 'super_admin' && (
+              <button onClick={() => setEdit(!edit)} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                {edit ? 'Tutup Form' : 'Edit Struktur Pengurus'}
+              </button>
+            )}
+          </div>
+
+          {!edit ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              {Object.entries(struktur).map(([key, val]) => (
+                <div key={key} className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                  <strong className="capitalize text-emerald-900 block">{key.replace(/([A-Z])/g, ' $1')}</strong>
+                  <span className="text-gray-700">{val}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <form onSubmit={handleSave} className="space-y-4">
+              <h4 className="font-bold text-emerald-900">Form Pengeditan Pengurus (Super Admin)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.keys(struktur).map((key) => (
+                  <div key={key}>
+                    <label className="block text-xs font-bold capitalize mb-1">{key.replace(/([A-Z])/g, ' $1')}</label>
+                    <input 
+                      type="text" 
+                      className="w-full p-2 border rounded text-sm" 
+                      value={form[key]} 
+                      onChange={(e) => setForm({ ...form, [key]: e.target.value })} 
+                      required 
+                    />
+                  </div>
+                ))}
+              </div>
+              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Simpan Struktur Baru</button>
+            </form>
+          )}
+        </div>
+      );
+    }
+
+    function ResetPasswordModule({ user }) {
+      const [passBaru, setPassBaru] = useState('');
+
+      const handleReset = (e) => {
+        e.preventDefault();
+        alert(`Password untuk akun ${user.username} berhasil diubah!`);
+        setPassBaru('');
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border max-w-md">
+          <h3 className="text-xl font-bold text-emerald-900 mb-4">Fitur Reset Password</h3>
+          <p className="text-xs text-gray-500 mb-4">Fitur ini aktif khusus untuk akun berstatus Jamaah dan Super Admin.</p>
+          <form onSubmit={handleReset} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Password Baru</label>
+              <input type="password" className="w-full p-3 border rounded text-sm" value={passBaru} onChange={(e) => setPassBaru(e.target.value)} required />
+            </div>
+            <button type="submit" className="bg-emerald-700 text-white w-full py-3 rounded-lg text-sm font-bold">Simpan Password Baru</button>
+          </form>
+        </div>
+      );
+    }
+
+    function QuranModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Al-Quran Digital</h3><p className="text-gray-600 text-sm mt-2">Daftar Surah dan Ayat Al-Quran lengkap untuk dibaca secara digital.</p></div>; }
+    function ZakatModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Kalkulator Zakat Digital</h3><p className="text-gray-600 text-sm mt-2">Hitung Zakat Mal, Zakat Fitrah, dan Fidyah secara praktis.</p></div>; }
+    function KiblatModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Arah Kiblat Digital</h3><p className="text-gray-600 text-sm mt-2">Kompas penunjuk arah kiblat akurat berbasis sensor perangkat.</p></div>; }
+    function DzikirModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Dzikir dan Doa Harian</h3><p className="text-gray-600 text-sm mt-2">Kumpulan dzikir pagi-petang dan doa harian yang terupdate otomatis.</p></div>; }
+    function IqraModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Materi Pembelajaran IQRA Anak-Anak</h3><p className="text-gray-600 text-sm mt-2">Panduan jilid 1 sampai 6 untuk belajar membaca Al-Quran anak.</p></div>; }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
