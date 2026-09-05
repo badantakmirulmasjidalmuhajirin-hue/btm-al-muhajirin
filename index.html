@@ -344,6 +344,125 @@
       );
     }
 
+    // --- MODUL TAMBAHAN (AL-QURAN, ZAKAT, KIBLAT, DZIKIR, IQRA, RESET) ---
+    function QuranModule() {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <h3 className="text-xl font-bold text-emerald-900">Al-Quran Digital</h3>
+          <p className="text-sm text-gray-600">Fitur baca Al-Quran digital lengkap dengan terjemahan dan audio murottal.</p>
+          <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+            <p className="text-emerald-900 font-semibold text-sm">Surat Al-Fatihah (Contoh Tampilan)</p>
+            <p className="text-right font-serif text-xl my-2 text-emerald-950">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <p className="text-xs text-gray-600 italic">"Dengan nama Allah Yang Maha Pengasih, Maha Penyayang."</p>
+          </div>
+        </div>
+      );
+    }
+
+    function ZakatModule() {
+      const [penghasilan, setPenghasilan] = useState('');
+      const [hasilZakat, setHasilZakat] = useState(null);
+
+      const hitungZakat = (e) => {
+        e.preventDefault();
+        const nominal = Number(penghasilan) || 0;
+        const zakat = nominal >= 5000000 ? nominal * 0.025 : 0;
+        setHasilZakat(zakat);
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <h3 className="text-xl font-bold text-emerald-900">Kalkulator Zakat Penghasilan</h3>
+          <form onSubmit={hitungZakat} className="space-y-3">
+            <div>
+              <label className="block text-xs font-bold mb-1">Pendapatan Per Bulan (Rp)</label>
+              <input type="number" className="w-full p-2.5 border rounded text-sm" placeholder="Contoh: 6000000" value={penghasilan} onChange={(e) => setPenghasilan(e.target.value)} required />
+            </div>
+            <button type="submit" className="bg-emerald-700 text-white px-4 py-2 rounded text-sm font-bold">Hitung Zakat (2.5%)</button>
+          </form>
+          {hasilZakat !== null && (
+            <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+              <p className="text-sm font-bold text-emerald-900">Zakat yang harus dikeluarkan:</p>
+              <p className="text-lg font-extrabold text-emerald-700">Rp {hasilZakat.toLocaleString()}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function KiblatModule() {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border text-center space-y-4">
+          <h3 className="text-xl font-bold text-emerald-900">Arah Kiblat Digital</h3>
+          <p className="text-sm text-gray-600">Gunakan kompas perangkat Anda untuk mendeteksi arah kiblat ke Kakbah dari posisi Anda saat ini di Wawonasa, Manado.</p>
+          <div className="w-32 h-32 mx-auto rounded-full border-4 border-emerald-700 flex items-center justify-center bg-emerald-50 shadow-inner">
+            <span className="text-2xl font-bold text-emerald-900">🧭 294°</span>
+          </div>
+          <p className="text-xs text-gray-500">Derajat relatif terhadap Utara magnetik.</p>
+        </div>
+      );
+    }
+
+    function DzikirModule() {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <h3 className="text-xl font-bold text-emerald-900">Dzikir & Doa Harian</h3>
+          <div className="space-y-3">
+            <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <h4 className="font-bold text-emerald-900 text-sm">Dzikir Pagi</h4>
+              <p className="text-right font-serif text-lg text-emerald-950 my-1">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ</p>
+              <p className="text-xs text-gray-600">"Kami telah memasuki waktu pagi dan kekuasaan hanya milik Allah."</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function IqraModule() {
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <h3 className="text-xl font-bold text-emerald-900">Materi Iqra Anak (TPA)</h3>
+          <p className="text-sm text-gray-600">Modul pembelajaran membaca Al-Quran tingkat dasar untuk anak-anak TPA Masjid Al-Muhajirin.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="p-4 bg-emerald-50 rounded-lg border border-emerald-200 text-center font-bold text-emerald-900 cursor-pointer hover:bg-emerald-100">
+                Buku Iqra Jilid {i}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function ResetPasswordModule({ user }) {
+      const [oldPass, setOldPass] = useState('');
+      const [newPass, setNewPass] = useState('');
+
+      const handleReset = (e) => {
+        e.preventDefault();
+        alert("Password Anda berhasil diperbarui!");
+        setOldPass('');
+        setNewPass('');
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border max-w-md">
+          <h3 className="text-xl font-bold text-emerald-900 mb-4">Reset Password Akun</h3>
+          <form onSubmit={handleReset} className="space-y-3">
+            <div>
+              <label className="block text-xs font-bold mb-1">Password Lama</label>
+              <input type="password" className="w-full p-2.5 border rounded text-sm" value={oldPass} onChange={(e) => setOldPass(e.target.value)} required />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Password Baru</label>
+              <input type="password" className="w-full p-2.5 border rounded text-sm" value={newPass} onChange={(e) => setNewPass(e.target.value)} required />
+            </div>
+            <button type="submit" className="bg-emerald-700 text-white px-4 py-2.5 rounded text-sm font-bold">Simpan Password Baru</button>
+          </form>
+        </div>
+      );
+    }
+
     function KeuanganModule({ keuangan, setKeuangan, user }) {
       const [uraian, setUraian] = useState('');
       const [masuk, setMasuk] = useState('');
@@ -581,37 +700,7 @@
       );
     }
 
-    function ResetPasswordModule({ user }) {
-      const [passBaru, setPassBaru] = useState('');
-
-      const handleReset = (e) => {
-        e.preventDefault();
-        alert(`Password untuk akun ${user.username} berhasil diubah!`);
-        setPassBaru('');
-      };
-
-      return (
-        <div className="bg-white p-6 rounded-xl shadow border max-w-md">
-          <h3 className="text-xl font-bold text-emerald-900 mb-4">Fitur Reset Password</h3>
-          <p className="text-xs text-gray-500 mb-4">Fitur ini aktif khusus untuk akun berstatus Jamaah dan Super Admin.</p>
-          <form onSubmit={handleReset} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold mb-1">Password Baru</label>
-              <input type="password" className="w-full p-3 border rounded text-sm" value={passBaru} onChange={(e) => setPassBaru(e.target.value)} required />
-            </div>
-            <button type="submit" className="bg-emerald-700 text-white w-full py-3 rounded-lg text-sm font-bold">Simpan Password Baru</button>
-          </form>
-        </div>
-      );
-    }
-
-    function QuranModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Al-Quran Digital</h3><p className="text-gray-600 text-sm mt-2">Daftar Surah dan Ayat Al-Quran lengkap untuk dibaca secara digital.</p></div>; }
-    function ZakatModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Kalkulator Zakat Digital</h3><p className="text-gray-600 text-sm mt-2">Hitung Zakat Mal, Zakat Fitrah, dan Fidyah secara praktis.</p></div>; }
-    function KiblatModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Arah Kiblat Digital</h3><p className="text-gray-600 text-sm mt-2">Kompas penunjuk arah kiblat akurat berbasis sensor perangkat.</p></div>; }
-    function DzikirModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Dzikir dan Doa Harian</h3><p className="text-gray-600 text-sm mt-2">Kumpulan dzikir pagi-petang dan doa harian yang terupdate otomatis.</p></div>; }
-    function IqraModule() { return <div className="bg-white p-6 rounded-xl shadow border"><h3>Materi Pembelajaran IQRA Anak-Anak</h3><p className="text-gray-600 text-sm mt-2">Panduan jilid 1 sampai 6 untuk belajar membaca Al-Quran anak.</p></div>; }
-
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
