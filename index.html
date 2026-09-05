@@ -20,18 +20,15 @@
       const [user, setUser] = useState(null);
       const [activeMenu, setActiveMenu] = useState('home');
 
-      // State Data Keuangan
       const [keuangan, setKeuangan] = useState([
         { id: 1, tanggal: '2026-06-01', uraian: 'Saldo Awal Bulan', masuk: 5000000, keluar: 0, ketKeluar: '-', saldo: 5000000 },
         { id: 2, tanggal: '2026-06-05', uraian: 'Kotak Amal Jumat', masuk: 1250000, keluar: 0, ketKeluar: '-', saldo: 6250000 }
       ]);
 
-      // State Data Jamaah (Proteksi No KK Ganda)
       const [jamaahList, setJamaahList] = useState([
         { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah' }
       ]);
 
-      // State Struktur BTM
       const [strukturBTM, setStrukturBTM] = useState({
         ketua: 'H. Abdullah',
         wakilKetua1: 'Drs. H. Rahman',
@@ -53,7 +50,6 @@
         koordinat: '1.4925° N, 124.8385° E'
       });
 
-      // Handler Login
       const handleLogin = (username, password) => {
         if (username === 'super_admin' && password === '2026-2029') {
           setUser({ username, role: 'super_admin' });
@@ -86,13 +82,11 @@
       );
     }
 
-    // --- SCREEN LOGIN & REGISTRASI MANDIRI ---
     function LoginScreen({ onLogin, jamaahList, setJamaahList }) {
       const [u, setU] = useState('');
       const [p, setP] = useState('');
       const [showRegister, setShowRegister] = useState(false);
 
-      // State form registrasi mandiri jamaah
       const [regNoKK, setRegNoKK] = useState('');
       const [regNama, setRegNama] = useState('');
       const [regKtp, setRegKtp] = useState('');
@@ -121,9 +115,8 @@
         };
 
         setJamaahList([...jamaahList, newData]);
-        alert("Registrasi Berhasil! Silakan masuk menggunakan Nomor KK atau Nama Anda sebagai Username dan Password yang telah dibuat.");
+        alert("Registrasi Berhasil! Silakan masuk menggunakan Nomor KK atau Nama Anda sebagai Username.");
         setShowRegister(false);
-        // Reset form
         setRegNoKK(''); setRegNama(''); setRegKtp(''); setRegHp(''); setRegAlamat(''); setRegJumlah(''); setRegAnggota(''); setRegPassword('');
       };
 
@@ -139,7 +132,7 @@
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Username / Akun Jamaah</label>
-                  <input type="text" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Username" value={u} onChange={(e) => setU(e.target.value)} />
+                  <input type="text" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Username / No KK" value={u} onChange={(e) => setU(e.target.value)} />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
@@ -149,9 +142,9 @@
                   Masuk Aplikasi
                 </button>
 
-                <div style={{ textAlign: 'center', marginTop: '15px' }}>
-                  <p style={{ fontSize: '14px', color: '#555' }}>Belum punya akun jamaah?</p>
-                  <button type="button" onClick={() => setShowRegister(true)} style={{ background: 'none', border: 'none', color: '#1b5e20', fontWeight: 'bold', cursor: 'pointer', textDecoration: 'underline' }}>
+                <div className="text-center mt-4">
+                  <p className="text-sm text-gray-500">Belum punya akun jamaah?</p>
+                  <button type="button" onClick={() => setShowRegister(true)} className="text-emerald-800 font-bold text-sm underline mt-1">
                     Daftar Akun Jamaah Baru
                   </button>
                 </div>
@@ -159,7 +152,7 @@
             ) : (
               <form onSubmit={handleRegistrasiMandiri} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Nomor KK</label>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Nomor KK (Wajib Unik)</label>
                   <input type="text" className="w-full p-2.5 border rounded-lg text-sm" placeholder="Nomor Kartu Keluarga" value={regNoKK} onChange={(e) => setRegNoKK(e.target.value)} required />
                 </div>
                 <div>
@@ -205,16 +198,7 @@
       );
     }
 
-    // --- MAIN LAYOUT ---
     function MainLayout({ user, onLogout, activeMenu, setActiveMenu, keuangan, setKeuangan, jamaahList, setJamaahList, strukturBTM, setStrukturBTM, profilMasjid, setProfilMasjid }) {
-      
-      useEffect(() => {
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          alert("Ketuk opsi 'Tambahkan ke Layar Utama' (Add to Home Screen) di browser Anda untuk menginstal aplikasi ini.");
-        });
-      }, []);
-
       return (
         <div className="flex flex-col md:flex-row min-h-screen">
           <div className="w-full md:w-72 bg-emerald-950 text-white p-5 flex flex-col justify-between shadow-lg">
@@ -228,15 +212,14 @@
               <ul className="space-y-1 text-sm">
                 <li onClick={() => setActiveMenu('home')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'home' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Beranda & Profil Masjid</li>
                 <li onClick={() => setActiveMenu('sholat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'sholat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Waktu Sholat Real-Time</li>
-                <li onClick={() => setActiveMenu('quran')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'quran' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Al-Quran Digital</li>
+                <li onClick={() => setActiveMenu('quran')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'quran' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Al-Quran Digital (30 Juz)</li>
                 <li onClick={() => setActiveMenu('zakat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'zakat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Kalkulator Zakat</li>
                 <li onClick={() => setActiveMenu('kiblat')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'kiblat' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Arah Kiblat Digital</li>
                 <li onClick={() => setActiveMenu('dzikir')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'dzikir' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Dzikir & Doa Harian</li>
-                <li onClick={() => setActiveMenu('iqra')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'iqra' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Materi Iqra Anak</li>
+                <li onClick={() => setActiveMenu('iqra')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'iqra' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Materi Iqra 1-6 (TPA)</li>
                 <li onClick={() => setActiveMenu('struktur')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'struktur' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Struktur Pengurus BTM</li>
                 <li onClick={() => setActiveMenu('keuangan')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'keuangan' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Keuangan Masjid</li>
                 <li onClick={() => setActiveMenu('jamaah')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'jamaah' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Data Jamaah Masjid</li>
-                
                 {(user.role === 'jamaah' || user.role === 'super_admin') && (
                   <li onClick={() => setActiveMenu('reset')} className={`cursor-pointer p-2.5 rounded-lg ${activeMenu === 'reset' ? 'bg-emerald-800 font-bold text-yellow-300' : 'hover:bg-emerald-900'}`}>Reset Password</li>
                 )}
@@ -267,6 +250,271 @@
       );
     }
 
+    // --- MODUL QURAN LENGKAP 30 JUZ & PENCARIAN ---
+    function QuranModule() {
+      const [surahs, setSurahs] = useState([]);
+      const [search, setSearch] = useState('');
+      const [selectedSurah, setSelectedSurah] = useState(null);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        fetch('https://equran.id/api/v2/surat')
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.data) {
+              setSurahs(data.data);
+            }
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error(err);
+            setLoading(false);
+          });
+      }, []);
+
+      const fetchDetailSurah = (nomor) => {
+        setLoading(true);
+        fetch(`https://equran.id/api/v2/surat/${nomor}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.data) {
+              setSelectedSurah(data.data);
+            }
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error(err);
+            setLoading(false);
+          });
+      };
+
+      const filteredSurah = surahs.filter(s => 
+        s.namaLatin.toLowerCase().includes(search.toLowerCase()) || 
+        s.arti.toLowerCase().includes(search.toLowerCase()) ||
+        String(s.nomor).includes(search)
+      );
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+              <h3 className="text-xl font-bold text-emerald-900">Al-Quran Digital (30 Juz)</h3>
+              <p className="text-xs text-gray-500">Pilih atau cari surah untuk membaca teks ayat dan terjemahan resmi Kemenag RI.</p>
+            </div>
+            {selectedSurah && (
+              <button onClick={() => setSelectedSurah(null)} className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold text-xs">
+                &larr; Kembali ke Daftar Surah
+              </button>
+            )}
+          </div>
+
+          {!selectedSurah ? (
+            <div className="space-y-4">
+              <input 
+                type="text" 
+                placeholder="Cari nama surah (contoh: Al-Fatihah, Yasin, An-Nas)..." 
+                className="w-full p-3 border rounded-lg text-sm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              {loading ? (
+                <p className="text-center py-8 text-emerald-800 font-semibold">Memuat daftar surah Al-Quran...</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-h-[550px] overflow-y-auto p-2">
+                  {filteredSurah.map((surah) => (
+                    <div 
+                      key={surah.nomor} 
+                      onClick={() => fetchDetailSurah(surah.nomor)}
+                      className="p-4 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 cursor-pointer flex justify-between items-center transition"
+                    >
+                      <div>
+                        <span className="text-xs font-bold text-emerald-700 bg-emerald-200 px-2 py-0.5 rounded-full">{surah.nomor}</span>
+                        <h4 className="font-bold text-emerald-900 mt-1">{surah.namaLatin}</h4>
+                        <p className="text-xs text-gray-600">{surah.arti} ({surah.jumlahAyat} Ayat)</p>
+                      </div>
+                      <span className="text-xl font-serif text-emerald-900 font-bold">{surah.nama}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="p-6 bg-emerald-900 text-white rounded-2xl text-center shadow">
+                <h3 className="text-2xl font-bold">{selectedSurah.namaLatin} ({selectedSurah.nama})</h3>
+                <p className="text-sm text-emerald-200">{selectedSurah.arti} &bull; {selectedSurah.jumlahAyat} Ayat &bull; {selectedSurah.tempatRevelasi}</p>
+                <p className="text-xs mt-2 italic text-emerald-300">{selectedSurah.deskripsi.replace(/(<([^>]+)>)/gi, "")}</p>
+              </div>
+
+              {loading ? (
+                <p className="text-center py-8 text-emerald-800 font-semibold">Memuat ayat...</p>
+              ) : (
+                <div className="space-y-4 max-h-[600px] overflow-y-auto p-2">
+                  {selectedSurah.ayat.map((item) => (
+                    <div key={item.nomorAyat} className="p-5 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="w-8 h-8 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs">{item.nomorAyat}</span>
+                      </div>
+                      <p className="text-right font-serif text-2xl text-emerald-950 leading-loose">{item.teksArab}</p>
+                      <p className="text-xs text-emerald-800 font-medium italic">{item.teksLatin}</p>
+                      <p className="text-sm text-gray-700">Artinya: "{item.teksIndonesia}"</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- MODUL DZIKIR & DOA HARIAN LENGKAP + PENCARIAN ---
+    function DzikirModule() {
+      const [search, setSearch] = useState('');
+      const daftarDoa = [
+        { id: 1, kategori: 'Dzikir & Doa', judul: 'Dzikir Pagi', arab: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ', latin: 'Ashbahna wa ashbahal mulku lillah', arti: 'Kami telah memasuki waktu pagi dan kekuasaan hanya milik Allah.' },
+        { id: 2, kategori: 'Dzikir & Doa', judul: 'Dzikir Petang', arab: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ', latin: 'Amsayna wa amsal mulku lillah', arti: 'Kami telah memasuki waktu petang dan kekuasaan hanya milik Allah.' },
+        { id: 3, kategori: 'Doa Harian', judul: 'Doa Sebelum Makan', arab: 'اللَّهُمَّ بَارِك لنا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ', latin: 'Allahumma barik lana fima razaqtana wa qina adhaban nar', arti: 'Ya Allah, berkahilah kami dalam rezeki yang telah Engkau berikan dan peliharalah kami dari siksa api neraka.' },
+        { id: 4, kategori: 'Doa Harian', judul: 'Doa Sesudah Makan', arab: 'الحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مُسْلِمِينَ', latin: 'Alhamdulillahilladhi athamana wasaqana wajaalana muslimin', arti: 'Segala puji bagi Allah yang telah memberi kami makan dan minum serta menjadikan kami termasuk orang-orang muslim.' },
+        { id: 5, kategori: 'Doa Harian', judul: 'Doa Sebelum Tidur', arab: 'بِاسْمِكَ اللَّهُمَّ أَحْيَا وَأَمُوتُ', latin: 'Bismikallahumma ahya wa amuut', arti: 'Dengan nama-Mu ya Allah, aku hidup dan aku mati.' },
+        { id: 6, kategori: 'Doa Harian', judul: 'Doa Bangun Tidur', arab: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ', latin: 'Alhamdulillahilladhi ahyana ba’da ma amatana wailaihin nusyur', arti: 'Segala puji bagi Allah yang telah menghidupkan kami kembali setelah mematikan kami, dan kepada-Allah tempat kembali.' },
+        { id: 7, kategori: 'Doa Harian', judul: 'Doa Masuk Kamar Mandi', arab: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ', latin: 'Allahumma inni audzubika minal khubuthi wal khabaith', arti: 'Ya Allah, sesungguhnya aku berlindung kepada-Mu dari segala kejahatan dan kotoran.' },
+        { id: 8, kategori: 'Doa Harian', judul: 'Doa Keluar Kamar Mandi', arab: 'غُفْرَانَكَ الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الأَذَى وَعَافَانِي', latin: 'Ghفرانك alhamdulillahilladhi adzhaba annil adza wa afani', arti: 'Dengan mengharap ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakit dariku dan menyehatkanku.' },
+        { id: 9, kategori: 'Doa Perjalanan', judul: 'Doa Keluar Rumah', arab: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ', latin: 'Bismillahi tawakkaltu alallahi la hawla wala quwwata illa billah', arti: 'Dengan nama Allah, aku bertawakal kepada Allah. Tiada daya dan kekuatan kecuali dengan pertolongan Allah.' }
+      ];
+
+      const filteredDoa = daftarDoa.filter(d => 
+        d.judul.toLowerCase().includes(search.toLowerCase()) || 
+        d.arti.toLowerCase().includes(search.toLowerCase()) ||
+        d.kategori.toLowerCase().includes(search.toLowerCase())
+      );
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+              <h3 className="text-xl font-bold text-emerald-900">Dzikir & Doa Harian Lengkap</h3>
+              <p className="text-xs text-gray-500">Kumpulan dzikir pagi-petang serta doa sehari-hari untuk diamalkan.</p>
+            </div>
+            <input 
+              type="text" 
+              placeholder="Cari doa atau dzikir..." 
+              className="p-2.5 border rounded-lg text-sm w-full md:w-72"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto p-1">
+            {filteredDoa.map((item) => (
+              <div key={item.id} className="p-5 bg-emerald-50 rounded-xl border border-emerald-200 space-y-2 flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] bg-emerald-700 text-white font-bold px-2 py-0.5 rounded-full">{item.kategori}</span>
+                  <h4 className="font-bold text-emerald-900 text-base mt-2">{item.judul}</h4>
+                  <p className="text-right font-serif text-2xl text-emerald-950 my-3 leading-loose">{item.arab}</p>
+                  <p className="text-xs text-emerald-800 italic font-medium">{item.latin}</p>
+                </div>
+                <p className="text-xs text-gray-700 border-t border-emerald-200 pt-2 mt-2">Artinya: "{item.arti}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // --- MODUL MATERI IQRA 1 S/D 6 (TPA ANAK) ---
+    function IqraModule() {
+      const [jilidAktif, setJilidAktif] = useState(1);
+
+      const materiIqra = {
+        1: {
+          judul: 'Buku Iqra Jilid 1: Pengenalan Huruf Hijaiyah Tunggal dengan Fathah (a)',
+          materi: [
+            { huruf: 'أَ - بَ - تَ', baca: 'A - Ba - Ta', ket: 'Mengenal huruf Alif, Ba, Ta dengan harakat Fathah dibaca A' },
+            { huruf: 'ثَ - جَ - حَ', baca: 'Tha - Ja - Ha', ket: 'Huruf Tsa, Jim, Ha' },
+            { huruf: 'خَ - دَ - ذَ', baca: 'Kha - Da - Dzal', ket: 'Huruf Kha, Dal, Dzal' },
+            { huruf: 'رَ - زَ - سَ', baca: 'Ra - Za - Sa', ket: 'Huruf Ra, Zai, Sin' }
+          ]
+        },
+        2: {
+          judul: 'Buku Iqra Jilid 2: Huruf Sambung & Bacaan Panjang (Mad Thabi\'i)',
+          materi: [
+            { huruf: 'بَا - تَار - ثَا', baca: 'Baa - Taar - Thaa', ket: 'Huruf bersambung dengan alif dibaca panjang 2 harakat' },
+            { huruf: 'جِي - حِي - خِي', baca: 'Jii - Hii - Khii', ket: 'Huruf berharakat Kasrah bertemu Ya Sukun' },
+            { huruf: 'بُو - تُو - ثُو', baca: 'Buu - Tuu - Thuu', ket: 'Huruf berharakat Dammah bertemu Waw Sukun' }
+          ]
+        },
+        3: {
+          judul: 'Buku Iqra Jilid 3: Kasrotain, Dhommatain, Fathatain (Tanwin) & Sukun',
+          materi: [
+            { huruf: 'أَنْ - بَنْ - تَنْ', baca: 'An - Ban - Tan', ket: 'Bacaan Tanwin Fathah (An)' },
+            { huruf: 'إِنْ - بِنْ - تِنْ', baca: 'In - Bin - Tin', ket: 'Bacaan Tanwin Kasrah (In)' },
+            { huruf: 'أُنْ - بُنْ - تُنْ', baca: 'Un - Bun - Tun', ket: 'Bacaan Tanwin Dammah (Un)' },
+            { huruf: 'أَبْ - أَتْ - أَجْ', baca: 'Ab - At - Aj', ket: 'Bacaan Sukun / Mati di tengah/akhir huruf' }
+          ]
+        },
+        4: {
+          judul: 'Buku Iqra Jilid 4: Tasydid (Shiddah) & Qalqalah',
+          materi: [
+            { huruf: 'رَبَّ - جَادَّ - حَجَّ', baca: 'Rabba - Jaadda - Hajja', ket: 'Bacaan Tasydid ditekan suaranya' },
+            { huruf: 'أَبْطَالَ - يَجْعَلُونَ', baca: 'Abthala - Yaj'aluna', ket: 'Huruf Qalqalah (B, J, D, Th, Q) memantul' }
+          ]
+        },
+        5: {
+          judul: 'Buku Iqra Jilid 5: Waqaf (Cara Berhenti) & Nun Mati / Tanwin (Izhar, Idgham, Iqlab, Ikhfa)',
+          materi: [
+            { huruf: 'مِنْ خَوْفٍ - مِنْ حَكِيمٍ', baca: 'Min khawfin - Min hakim', ket: 'Izhar Halqi (Jelas)' },
+            { huruf: 'مَمْدُودَةً ➔ مَمْدُودَةْ', baca: 'Mamdudah (Waqaf)', ket: 'Berhenti pada ta marbuthah atau fathatain menjadi sukun/h' }
+          ]
+        },
+        6: {
+          judul: 'Buku Iqra Jilid 6: Latihan Lancar Membaca Al-Quran & Hukum Mad Mad wajib/jaiz',
+          materi: [
+            { huruf: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ', baca: 'Bismillahir Rahmanir Rahim', ket: 'Latihan tartil dan tajwid tingkat mahir' },
+            { huruf: 'صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ', baca: 'Siratal ladzina an amta alaihim', ket: 'Latihan kelancaran bacaan Al-Fatihah dan surah pendek' }
+          ]
+        }
+      };
+
+      return (
+        <div className="bg-white p-6 rounded-xl shadow border space-y-6">
+          <div>
+            <h3 className="text-xl font-bold text-emerald-900">Materi Pembelajaran Iqra 1 s/d 6 (TPA Masjid)</h3>
+            <p className="text-xs text-gray-500">Pilih jilid Iqra untuk melihat materi panduan mengaji anak-anak.</p>
+          </div>
+
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {[1, 2, 3, 4, 5, 6].map((jilid) => (
+              <button 
+                key={jilid} 
+                onClick={() => setJilidAktif(jilid)}
+                className={`p-3 rounded-lg font-bold text-sm transition ${jilidAktif === jilid ? 'bg-emerald-700 text-white shadow' : 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200'}`}
+              >
+                Iqra Jilid {jilid}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-6 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-4">
+            <h4 className="font-bold text-emerald-900 text-base">{materiIqra[jilidAktif].judul}</h4>
+            <div className="space-y-3">
+              {materiIqra[jilidAktif].materi.map((item, index) => (
+                <div key={index} className="p-4 bg-white rounded-xl border border-emerald-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                  <div>
+                    <p className="font-serif text-2xl text-emerald-950 font-bold">{item.huruf}</p>
+                    <p className="text-xs text-gray-600 mt-1">{item.ket}</p>
+                  </div>
+                  <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">{item.baca}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- MODUL LAINNYA (HOME, SHOLAT, ZAKAT, KIBLAT, STRUKTUR, KEUANGAN, JAMAAH, RESET) ---
     function HomeModule({ profil, user, setProfil }) {
       const [edit, setEdit] = useState(false);
       const [nama, setNama] = useState(profil.nama);
@@ -317,43 +565,17 @@
     }
 
     function SholatModule() {
-      const [lokasi, setLokasi] = useState('Manado (Default)');
-      const [jadwal, setJadwal] = useState({ Imsak: '04:15', Subuh: '04:25', Dzuhur: '11:50', Ashar: '15:15', Maghrib: '17:55', Isya: '19:05' });
-
-      useEffect(() => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(() => {
-            setLokasi('Menyesuaikan Lokasi GPS Anda');
-          });
-        }
-      }, []);
-
       return (
         <div className="bg-white p-6 rounded-xl shadow border">
           <h3 className="text-xl font-bold text-emerald-900 mb-1">Jadwal Sholat Real-Time</h3>
-          <p className="text-xs text-gray-500 mb-6">Status Area: {lokasi}</p>
+          <p className="text-xs text-gray-500 mb-6">Area: Kota Manado & Sekitarnya (Wawonasa)</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {Object.entries(jadwal).map(([key, val]) => (
+            {Object.entries({ Imsak: '04:15', Subuh: '04:25', Dzuhur: '11:50', Ashar: '15:15', Maghrib: '17:55', Isya: '19:05' }).map(([key, val]) => (
               <div key={key} className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center">
                 <h4 className="font-bold text-emerald-900 text-sm">{key}</h4>
                 <p className="text-xl font-extrabold text-emerald-700 mt-1">{val}</p>
               </div>
             ))}
-          </div>
-        </div>
-      );
-    }
-
-    // --- MODUL TAMBAHAN (AL-QURAN, ZAKAT, KIBLAT, DZIKIR, IQRA, RESET) ---
-    function QuranModule() {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
-          <h3 className="text-xl font-bold text-emerald-900">Al-Quran Digital</h3>
-          <p className="text-sm text-gray-600">Fitur baca Al-Quran digital lengkap dengan terjemahan dan audio murottal.</p>
-          <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-            <p className="text-emerald-900 font-semibold text-sm">Surat Al-Fatihah (Contoh Tampilan)</p>
-            <p className="text-right font-serif text-xl my-2 text-emerald-950">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-            <p className="text-xs text-gray-600 italic">"Dengan nama Allah Yang Maha Pengasih, Maha Penyayang."</p>
           </div>
         </div>
       );
@@ -371,7 +593,7 @@
       };
 
       return (
-        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
+        <div className="bg-white p-6 rounded-xl shadow border space-y-4 max-w-lg">
           <h3 className="text-xl font-bold text-emerald-900">Kalkulator Zakat Penghasilan</h3>
           <form onSubmit={hitungZakat} className="space-y-3">
             <div>
@@ -392,9 +614,9 @@
 
     function KiblatModule() {
       return (
-        <div className="bg-white p-6 rounded-xl shadow border text-center space-y-4">
+        <div className="bg-white p-6 rounded-xl shadow border text-center space-y-4 max-w-md mx-auto">
           <h3 className="text-xl font-bold text-emerald-900">Arah Kiblat Digital</h3>
-          <p className="text-sm text-gray-600">Gunakan kompas perangkat Anda untuk mendeteksi arah kiblat ke Kakbah dari posisi Anda saat ini di Wawonasa, Manado.</p>
+          <p className="text-sm text-gray-600">Kompas penunjuk arah Kakbah dari Wawonasa, Manado.</p>
           <div className="w-32 h-32 mx-auto rounded-full border-4 border-emerald-700 flex items-center justify-center bg-emerald-50 shadow-inner">
             <span className="text-2xl font-bold text-emerald-900">🧭 294°</span>
           </div>
@@ -403,46 +625,14 @@
       );
     }
 
-    function DzikirModule() {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
-          <h3 className="text-xl font-bold text-emerald-900">Dzikir & Doa Harian</h3>
-          <div className="space-y-3">
-            <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-              <h4 className="font-bold text-emerald-900 text-sm">Dzikir Pagi</h4>
-              <p className="text-right font-serif text-lg text-emerald-950 my-1">أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ</p>
-              <p className="text-xs text-gray-600">"Kami telah memasuki waktu pagi dan kekuasaan hanya milik Allah."</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    function IqraModule() {
-      return (
-        <div className="bg-white p-6 rounded-xl shadow border space-y-4">
-          <h3 className="text-xl font-bold text-emerald-900">Materi Iqra Anak (TPA)</h3>
-          <p className="text-sm text-gray-600">Modul pembelajaran membaca Al-Quran tingkat dasar untuk anak-anak TPA Masjid Al-Muhajirin.</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="p-4 bg-emerald-50 rounded-lg border border-emerald-200 text-center font-bold text-emerald-900 cursor-pointer hover:bg-emerald-100">
-                Buku Iqra Jilid {i}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    function ResetPasswordModule({ user }) {
+    function ResetPasswordModule() {
       const [oldPass, setOldPass] = useState('');
       const [newPass, setNewPass] = useState('');
 
       const handleReset = (e) => {
         e.preventDefault();
         alert("Password Anda berhasil diperbarui!");
-        setOldPass('');
-        setNewPass('');
+        setOldPass(''); setNewPass('');
       };
 
       return (
@@ -543,7 +733,7 @@
       );
     }
 
-    function JamaahModule({ jamaahList, setJamaahList, user }) {
+    function JamaahModule({ jamaahList, setJamaahList }) {
       const [search, setSearch] = useState('');
       const [noKK, setNoKK] = useState('');
       const [namaKepala, setNamaKepala] = useState('');
