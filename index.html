@@ -531,7 +531,7 @@
             { no: 40, nama: 'Gafir', arti: 'Yang Mengampuni', ayat: 85, juz: 24, arab: 'غافر' },
             { no: 41, nama: 'Fussilat', arti: 'Yang Dijelaskan', ayat: 54, juz: '24 - 25', arab: 'فصلت' },
             { no: 42, nama: 'Asy-Syura', arti: 'Musyawarah', ayat: 53, juz: 25, arab: 'الشورى' },
-            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', ayat: 89, juz: 25, arab: 'الزخرف' },
+            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', ayat: 89, juz: 25, arab: 'الزخruf' },
             { no: 44, nama: 'Ad-Dukhan', arti: 'Kabut', ayat: 59, juz: 25, arab: 'الدخان' },
             { no: 45, nama: 'Al-Jasiyah', arti: 'Yang Berlutut', ayat: 37, juz: 25, arab: 'الجاثية' },
             { no: 46, nama: 'Al-Ahqaf', arti: 'Bukit Pasir', ayat: 35, juz: 26, arab: 'الأحقاف' },
@@ -608,7 +608,6 @@
           const handleSelectSurah = (surah) => {
             setSelectedSurah(surah);
             setLoadingAyahs(true);
-            // Mengambil ayat dan terjemahan bahasa Indonesia dari API publik
             fetch(`https://api.alquran.cloud/v1/surah/${surah.no}/editions/quran-uthmani,id.indonesian`)
               .then(res => res.json())
               .then(data => {
@@ -720,35 +719,52 @@
           );
         }
 
-        // --- MODUL ZAKAT ---
+        // --- MODUL ZAKAT (PERBAIKAN FUNGSI) ---
         function ZakatModule() {
           const [jenisZakat, setJenisZakat] = useState('penghasilan');
           const [nominal, setNominal] = useState('');
           const [jumlahJiwa, setJumlahJiwa] = useState(1);
           const hargaBerasKg = 15000;
 
-          const hasilZakat = () => {
+          const hitungZakat = () => {
             const val = parseFloat(nominal) || 0;
-            if (jenisZakat === 'penghasilan') return val >= 6000000 ? val * 0.025 : 0;
-            if (jenisZakat === 'maal') return val >= 85000000 ? val * 0.025 : 0;
-            return jumlahJiwa * 2.5 * hargaBerasKg;
+            if (jenisZakat === 'penghasilan') {
+              // Nishab penghasilan per bulan disederhanakan ~Rp 6.000.000
+              return val >= 6000000 ? val * 0.025 : 0;
+            }
+            if (jenisZakat === 'maal') {
+              // Nishab maal setara 85 gram emas (~Rp 85.000.000)
+              return val >= 85000000 ? val * 0.025 : 0;
+            }
+            if (jenisZakat === 'fitrah') {
+              const jiwa = parseInt(jumlahJiwa) || 1;
+              return jiwa * 2.5 * hargaBerasKg;
+            }
+            return 0;
           };
 
           return (
             <div className="bg-white p-6 rounded-xl shadow border space-y-6">
               <h3 className="text-xl font-bold text-emerald-900">🧮 Kalkulator Zakat Digital</h3>
               <div className="flex gap-2 flex-wrap">
-                <button onClick={() => setJenisZakat('penghasilan')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'penghasilan' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Penghasilan</button>
-                <button onClick={() => setJenisZakat('maal')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'maal' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Maal (Harta)</button>
-                <button onClick={() => setJenisZakat('fitrah')} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'fitrah' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Fitrah</button>
+                <button onClick={() => { setJenisZakat('penghasilan'); setNominal(''); }} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'penghasilan' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Penghasilan</button>
+                <button onClick={() => { setJenisZakat('maal'); setNominal(''); }} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'maal' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Maal (Harta)</button>
+                <button onClick={() => { setJenisZakat('fitrah'); setJumlahJiwa(1); }} className={`px-4 py-2 rounded-lg font-bold text-sm ${jenisZakat === 'fitrah' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Zakat Fitrah</button>
               </div>
+              
               <div className="p-5 bg-emerald-50 rounded-xl border space-y-4">
                 {jenisZakat !== 'fitrah' ? (
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">
                       {jenisZakat === 'penghasilan' ? 'Masukkan Pendapatan Bersih Per Bulan (Rp)' : 'Masukkan Total Nilai Harta / Tabungan (Rp)'}
                     </label>
-                    <input type="number" placeholder="Contoh: 7500000" value={nominal} onChange={(e) => setNominal(e.target.value)} className="w-full p-3 border rounded-lg text-sm bg-white" />
+                    <input 
+                      type="number" 
+                      placeholder={jenisZakat === 'penghasilan' ? "Contoh: 7500000" : "Contoh: 90000000"} 
+                      value={nominal} 
+                      onChange={(e) => setNominal(e.target.value)} 
+                      className="w-full p-3 border rounded-lg text-sm bg-white" 
+                    />
                     <p className="text-[11px] text-gray-500 mt-1">
                       {jenisZakat === 'penghasilan' ? 'Nishab zakat penghasilan setara 85 gram emas per tahun (~Rp 6.000.000/bulan). Zakat 2.5%.' : 'Nishab zakat maal setara 85 gram emas (~Rp 85.000.000). Telah haul 1 tahun. Zakat 2.5%.'}
                     </p>
@@ -756,13 +772,21 @@
                 ) : (
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1">Jumlah Anggota Keluarga (Jiwa)</label>
-                    <input type="number" min="1" value={jumlahJiwa} onChange={(e) => setJumlahJiwa(e.target.value)} className="w-full p-3 border rounded-lg text-sm bg-white" placeholder="Jumlah Jiwa" />
+                    <input 
+                      type="number" 
+                      min="1" 
+                      value={jumlahJiwa} 
+                      onChange={(e) => setJumlahJiwa(e.target.value)} 
+                      className="w-full p-3 border rounded-lg text-sm bg-white" 
+                      placeholder="Masukkan Jumlah Jiwa" 
+                    />
                     <p className="text-[11px] text-gray-500 mt-1">Standar zakat fitrah: 2.5 kg beras per jiwa (Harga beras estimasi Rp 15.000/kg).</p>
                   </div>
                 )}
+                
                 <div className="p-4 bg-white rounded-lg border shadow-sm">
                   <p className="text-xs text-gray-500">Estimasi Zakat yang Harus Dikeluarkan:</p>
-                  <p className="text-2xl font-extrabold text-emerald-800 mt-1">Rp {hasilZakat().toLocaleString('id-ID')}</p>
+                  <p className="text-2xl font-extrabold text-emerald-800 mt-1">Rp {hitungZakat().toLocaleString('id-ID')}</p>
                 </div>
               </div>
             </div>
