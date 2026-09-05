@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Masjid Al-Muhajirin Wawonasa</title>
+    <!-- Ikon Website / Favicon untuk Laptop & HP -->
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    
     <!-- Tailwind CSS untuk Desain Modern -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM -->
@@ -57,7 +61,8 @@
           const [profilMasjid, setProfilMasjid] = useState({
             nama: 'Masjid Al-Muhajirin Wawonasa',
             alamat: 'Jl. Trans Wawonasa, Kecamatan Singkil, Kota Manado, Sulawesi Utara',
-            koordinat: '1.4931° N, 124.8412° E (Manado)'
+            koordinat: '1.4931° N, 124.8412° E (Manado)',
+            logoUrl: 'logo.jpg'
           });
 
           const handleLogin = (username, password) => {
@@ -114,14 +119,16 @@
           return (
             <div className="min-h-screen bg-emerald-950 p-4 md:p-8 flex flex-col justify-center items-center">
               <div className="max-w-4xl w-full space-y-6">
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white border border-white/20 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div>
-                    <span className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Profil Masjid</span>
-                    <h1 className="text-2xl md:text-3xl font-extrabold mt-2">{profilMasjid.nama}</h1>
-                    <p className="text-sm text-emerald-200 mt-1">📍 {profilMasjid.alamat}</p>
-                    <p className="text-xs text-emerald-300 mt-1">Koordinat: {profilMasjid.koordinat}</p>
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white border border-white/20 shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+                  <div className="flex items-center gap-4">
+                    <img src={profilMasjid.logoUrl} alt="Logo Masjid" className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-yellow-400 shadow-md bg-white flex-shrink-0" />
+                    <div>
+                      <span className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Profil Resmi Masjid</span>
+                      <h1 className="text-2xl md:text-3xl font-extrabold mt-2">{profilMasjid.nama}</h1>
+                      <p className="text-sm text-emerald-200 mt-1">📍 {profilMasjid.alamat}</p>
+                    </div>
                   </div>
-                  <div className="text-right bg-emerald-900/60 p-4 rounded-xl border border-emerald-700/50 w-full md:w-auto">
+                  <div className="text-right bg-emerald-900/60 p-4 rounded-xl border border-emerald-700/50 w-full md:w-auto flex-shrink-0">
                     <p className="text-xs text-emerald-300">Waktu Real-Time (WITA)</p>
                     <p className="text-2xl font-mono font-bold text-white mt-1">{currentTime.toLocaleTimeString('id-ID')}</p>
                     <p className="text-xs text-emerald-200 mt-1">{currentTime.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
@@ -189,6 +196,7 @@
               <div className="w-full md:w-72 bg-emerald-950 text-white p-5 flex flex-col justify-between shadow-lg">
                 <div>
                   <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-emerald-800">
+                    <img src={profilMasjid.logoUrl} alt="Logo" className="w-10 h-10 rounded-full object-cover border border-yellow-400 bg-white" />
                     <div>
                       <h2 className="text-sm font-bold text-yellow-400">Al-Muhajirin Wawonasa</h2>
                       <p className="text-xs text-emerald-300 uppercase">Role: {user.role}</p>
@@ -216,27 +224,31 @@
                   <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full">User: {user.username}</span>
                 </header>
 
-                {activeMenu === 'home' && <HomeModule profil={profilMasjid} user={user} setProfil={setProfilMasjid} />}
+                {activeMenu === 'home' && <HomeModule profil={profilMasjid} />}
                 {activeMenu === 'sholat' && <SholatModule />}
                 {activeMenu === 'quran' && <div className="bg-white p-6 rounded-xl shadow border"><h3>Al-Quran Digital</h3></div>}
                 {activeMenu === 'zakat' && <div className="bg-white p-6 rounded-xl shadow border"><h3>Kalkulator Zakat Digital</h3></div>}
                 {activeMenu === 'kiblat' && <div className="bg-white p-6 rounded-xl shadow border"><h3>Arah Kiblat Digital</h3></div>}
                 {activeMenu === 'dzikir' && <div className="bg-white p-6 rounded-xl shadow border"><h3>Dzikir dan Doa Harian</h3></div>}
                 {activeMenu === 'iqra' && <IqraModule />}
-                {activeMenu === 'struktur' && <StrukturModule struktur={strukturBTM} setStruktur={setStrukturBTM} user={user} />}
-                {activeMenu === 'keuangan' && <KeuanganModule keuangan={keuangan} setKeuangan={setKeuangan} user={user} />}
-                {activeMenu === 'jamaah' && <JamaahModule jamaahList={jamaahList} setJamaahList={setJamaahList} user={user} />}
+                {activeMenu === 'struktur' && <StrukturModule struktur={strukturBTM} />}
+                {activeMenu === 'keuangan' && <KeuanganModule keuangan={keuangan} />}
+                {activeMenu === 'jamaah' && <JamaahModule jamaahList={jamaahList} />}
               </div>
             </div>
           );
         }
 
-        function HomeModule({ profil, user, setProfil }) {
+        function HomeModule({ profil }) {
           return (
-            <div className="bg-white p-6 rounded-xl shadow border">
-              <h3 className="text-xl font-bold text-emerald-900 mb-2">{profil.nama}</h3>
-              <p className="text-gray-600 mb-2"><strong>Alamat:</strong> {profil.alamat}</p>
-              <p className="text-gray-600 mb-4"><strong>Koordinat Geografis:</strong> {profil.koordinat}</p>
+            <div className="bg-white p-6 rounded-xl shadow border flex flex-col md:flex-row gap-6 items-center">
+              <img src={profil.logoUrl} alt="Logo Masjid" className="w-32 h-32 rounded-full object-cover border-4 border-emerald-600 shadow-md flex-shrink-0" />
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-emerald-900">{profil.nama}</h3>
+                <p className="text-gray-600 text-sm"><strong>Alamat:</strong> {profil.alamat}</p>
+                <p className="text-gray-600 text-sm"><strong>Koordinat Geografis:</strong> {profil.koordinat}</p>
+                <p className="text-xs text-emerald-700 font-semibold bg-emerald-50 p-2 rounded border border-emerald-200 mt-2">✨ Selamat datang di sistem manajemen digital Masjid Al-Muhajirin Wawonasa.</p>
+              </div>
             </div>
           );
         }
@@ -250,7 +262,7 @@
           );
         }
 
-        function KeuanganModule({ keuangan, setKeuangan, user }) {
+        function KeuanganModule({ keuangan }) {
           return (
             <div className="bg-white p-6 rounded-xl shadow border space-y-6">
               <h3 className="text-xl font-bold text-emerald-900">Laporan Keuangan Masjid</h3>
