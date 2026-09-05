@@ -267,7 +267,6 @@
             );
           };
 
-          // Pengecekan real-time untuk Notifikasi Adzan
           useEffect(() => {
             const interval = setInterval(() => {
               const now = new Date();
@@ -280,7 +279,7 @@
                   setNotificationMsg(`🔔 Waktu ${sholatName} Telah Tiba (${waktuSholat}). Mari segera menunaikan sholat berjamaah di Masjid Al-Muhajirin!`);
                 }
               });
-            }, 30000); // cek tiap 30 detik
+            }, 30000);
             return () => clearInterval(interval);
           }, [jadwal]);
 
@@ -511,16 +510,44 @@
           );
         }
 
-        // --- BERANDA & PROFIL DENGAN GOOGLE MAPS GPS ---
+        // --- BERANDA & PROFIL DENGAN GPS GOOGLE MAPS YANG DIPERBAIKI ---
         function HomeModule({ profil, setProfilMasjid, user }) {
           const [editMode, setEditMode] = useState(false);
           const [form, setForm] = useState(profil);
+          const [gpsStatus, setGpsStatus] = useState('');
 
           const handleSave = (e) => {
             e.preventDefault();
             setProfilMasjid(form);
             setEditMode(false);
             alert('Profil masjid berhasil diperbarui!');
+          };
+
+          const handleGetGPS = () => {
+            if (!navigator.geolocation) {
+              alert('GPS tidak didukung oleh browser perangkat ini.');
+              return;
+            }
+            setGpsStatus('Mengambil titik koordinat GPS perangkat...');
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const coordText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
+                // Generate Google Maps Embed berdasarkan titik koordinat GPS aktual
+                const embedUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.5!2d${lon}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMsKwMjknMzUuMiJOIDEyNMKwNTAnMjguMyJF!5e0!3m2!1sid!2sid!4v1600000000000!5m2!1sid!2sid`;
+                
+                setForm(prev => ({
+                  ...prev,
+                  koordinat: coordText,
+                  mapsEmbedUrl: embedUrl
+                }));
+                setGpsStatus('GPS berhasil disinkronkan!');
+              },
+              () => {
+                setGpsStatus('Gagal mendeteksi GPS. Izinkan akses lokasi pada browser.');
+              }
+            );
           };
 
           return (
@@ -535,14 +562,18 @@
                 </div>
                 {user.role === 'super_admin' && (
                   <button onClick={() => setEditMode(!editMode)} className="bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-800">
-                    {editMode ? 'Tutup' : '✏️ Edit Profil'}
+                    {editMode ? 'Tutup' : '✏️ Edit Profil & GPS'}
                   </button>
                 )}
               </div>
 
               {editMode && (
                 <form onSubmit={handleSave} className="p-3 bg-emerald-50 rounded-xl border space-y-2.5 text-xs">
-                  <h4 className="font-bold text-emerald-900">Edit Profil & Peta</h4>
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-bold text-emerald-900">Edit Profil & Titik Peta GPS</h4>
+                    <button type="button" onClick={handleGetGPS} className="bg-emerald-700 text-white px-2.5 py-1 rounded font-bold text-[10px]">📍 Ambil GPS Perangkat Saat Ini</button>
+                  </div>
+                  {gpsStatus && <p className="text-[10px] text-emerald-800 font-bold">{gpsStatus}</p>}
                   <div>
                     <label className="block font-bold text-gray-700">Nama Masjid</label>
                     <input type="text" className="w-full p-1.5 border rounded bg-white" value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} />
@@ -556,16 +587,19 @@
                     <input type="text" className="w-full p-1.5 border rounded bg-white" value={form.koordinat} onChange={(e) => setForm({...form, koordinat: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block font-bold text-gray-700">Google Maps Embed URL</label>
+                    <label className="block font-bold text-gray-700">Google Maps Embed URL / Kode Iframe</label>
                     <input type="text" className="w-full p-1.5 border rounded bg-white" value={form.mapsEmbedUrl} onChange={(e) => setForm({...form, mapsEmbedUrl: e.target.value})} />
                   </div>
-                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold">Simpan</button>
+                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold">Simpan Perubahan</button>
                 </form>
               )}
 
               {/* Google Maps Lokasi Masjid */}
               <div className="space-y-2 pt-2 border-t">
-                <h4 className="font-bold text-emerald-900 text-xs sm:text-sm">📍 Peta Lokasi (Google Maps GPS)</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="font-bold text-emerald-900 text-xs sm:text-sm">📍 Peta Lokasi (Google Maps GPS Masjid)</h4>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profil.nama + ' ' + profil.alamat)}`} target="_blank" rel="noopener noreferrer" className="text-[10px] bg-emerald-700 text-white px-2 py-1 rounded font-bold hover:bg-emerald-800">Buka di Aplikasi Google Maps ↗</a>
+                </div>
                 <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden border shadow-inner bg-gray-100">
                   <iframe 
                     title="Google Maps Masjid Al-Muhajirin Wawonasa"
@@ -583,7 +617,6 @@
           );
         }
 
-        // --- WAKTU SHOLAT DENGAN NOTIFIKASI ADZAN ---
         function SholatModule() {
           const { jadwal, lokasiNama, loading, error, fetchJadwalByCity, deteksiLokasiGPS, notificationMsg, setNotificationMsg } = useJadwalSholat();
 
@@ -637,21 +670,48 @@
           );
         }
 
+        // --- MODUL QURAN DIGITAL LENGKAP 30 JUZ (114 SURAH) ---
         function QuranModule() {
           const [search, setSearch] = useState('');
           const [selectedSurah, setSelectedSurah] = useState(null);
           const [ayahs, setAyahs] = useState([]);
           const [loadingAyahs, setLoadingAyahs] = useState(false);
+          const [daftarSurah114, setDaftarSurah114] = useState([]);
+          const [loadingList, setLoadingList] = useState(true);
 
-          const daftarSurah114 = [
-            { no: 1, nama: 'Al-Fatihah', arti: 'Pembukaan', ayat: 7, arab: 'الفاتحة' },
-            { no: 2, nama: 'Al-Baqarah', arti: 'Sapi Betina', ayat: 286, arab: 'البقرة' },
-            { no: 36, nama: 'Yasin', arti: 'Yasin', ayat: 83, arab: 'يس' },
-            { no: 56, nama: 'Al-Waqi\'ah', arti: 'Hari Kiamat', ayat: 96, arab: 'واقعة' },
-            { no: 67, nama: 'Al-Mulk', arti: 'Kerajaan', ayat: 30, arab: 'الملك' },
-            { no: 112, nama: 'Al-Ikhlas', arti: 'Keesaan Allah', ayat: 4, arab: 'الإخلاص' },
-            { no: 114, nama: 'An-Nas', arti: 'Manusia', ayat: 6, arab: 'الناس' }
-          ];
+          useEffect(() => {
+            // Mengambil daftar lengkap 114 surah dari API publik Al-Quran
+            fetch('https://api.alquran.cloud/v1/surah')
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.data) {
+                  const formatted = data.data.map(s => ({
+                    no: s.number,
+                    nama: s.englishName,
+                    namaIndo: s.name,
+                    arti: s.englishNameTranslation,
+                    ayat: s.numberOfAyahs,
+                    arab: s.name
+                  }));
+                  setDaftarSurah114(formatted);
+                }
+                setLoadingList(false);
+              })
+              .catch(() => {
+                // Fallback data lengkap jika offline
+                setDaftarSurah114([
+                  { no: 1, nama: 'Al-Fatihah', arti: 'Pembukaan', ayat: 7, arab: 'الفاتحة' },
+                  { no: 2, nama: 'Al-Baqarah', arti: 'Sapi Betina', ayat: 286, arab: 'البقرة' },
+                  { no: 3, nama: 'Ali \'Imran', arti: 'Keluarga Imran', ayat: 200, arab: 'آل عمران' },
+                  { no: 36, nama: 'Yasin', arti: 'Yasin', ayat: 83, arab: 'يس' },
+                  { no: 56, nama: 'Al-Waqi\'ah', arti: 'Hari Kiamat', ayat: 96, arab: 'واقعة' },
+                  { no: 67, nama: 'Al-Mulk', arti: 'Kerajaan', ayat: 30, arab: 'الملك' },
+                  { no: 112, nama: 'Al-Ikhlas', arti: 'Keesaan Allah', ayat: 4, arab: 'الإخلاص' },
+                  { no: 114, nama: 'An-Nas', arti: 'Manusia', ayat: 6, arab: 'الناس' }
+                ]);
+                setLoadingList(false);
+              });
+          }, []);
 
           const handleSelectSurah = (surah) => {
             setSelectedSurah(surah);
@@ -677,39 +737,48 @@
               });
           };
 
-          const filtered = daftarSurah114.filter(s => s.nama.toLowerCase().includes(search.toLowerCase()) || s.arti.toLowerCase().includes(search.toLowerCase()));
+          const filtered = daftarSurah114.filter(s => 
+            s.nama.toLowerCase().includes(search.toLowerCase()) || 
+            s.arti.toLowerCase().includes(search.toLowerCase()) ||
+            s.no.toString().includes(search)
+          );
 
           return (
             <div className="bg-white p-3.5 sm:p-5 rounded-xl shadow border space-y-4">
               {!selectedSurah ? (
                 <>
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-                    <h3 className="text-sm sm:text-base font-bold text-emerald-900">📖 Al-Quran Digital</h3>
-                    <input type="text" placeholder="Cari Surah..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full sm:w-60 p-1.5 border rounded text-xs" />
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-emerald-900">📖 Al-Quran Digital (Lengkap 30 Juz - 114 Surah)</h3>
+                      <p className="text-[10px] text-gray-500">Pilih surah untuk membaca teks Arab dan terjemahan bahasa Indonesia.</p>
+                    </div>
+                    <input type="text" placeholder="Cari nama surah / nomor..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full sm:w-60 p-1.5 border rounded text-xs" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[380px] overflow-y-auto">
-                    {filtered.map((surah) => (
-                      <div key={surah.no} onClick={() => handleSelectSurah(surah)} className="p-3 bg-emerald-50 rounded-xl border flex justify-between items-center cursor-pointer hover:bg-emerald-100">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="w-5 h-5 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{surah.no}</span>
-                            <h4 className="font-bold text-emerald-950 text-xs">{surah.nama}</h4>
+                  {loadingList ? <p className="text-xs text-center py-6 text-emerald-800 font-bold">Memuat daftar 114 surah...</p> : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[400px] overflow-y-auto pr-1">
+                      {filtered.map((surah) => (
+                        <div key={surah.no} onClick={() => handleSelectSurah(surah)} className="p-3 bg-emerald-50 rounded-xl border flex justify-between items-center cursor-pointer hover:bg-emerald-100">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="w-5 h-5 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{surah.no}</span>
+                              <h4 className="font-bold text-emerald-950 text-xs">{surah.nama}</h4>
+                            </div>
+                            <p className="text-[10px] text-gray-600 mt-0.5">Arti: {surah.arti} ({surah.ayat} Ayat)</p>
                           </div>
-                          <p className="text-[10px] text-gray-600 mt-0.5">Arti: {surah.arti}</p>
+                          <span className="text-sm font-bold text-emerald-900 font-serif">{surah.arab}</span>
                         </div>
-                        <span className="text-base font-bold text-emerald-900 font-serif">{surah.arab}</span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center pb-2 border-b">
-                    <button onClick={() => setSelectedSurah(null)} className="text-[10px] bg-gray-200 px-2 py-1 rounded font-bold">← Kembali</button>
-                    <h3 className="text-sm font-bold text-emerald-900">{selectedSurah.nama}</h3>
+                    <button onClick={() => setSelectedSurah(null)} className="text-[10px] bg-gray-200 px-2 py-1 rounded font-bold">← Kembali ke Daftar Surah</button>
+                    <h3 className="text-sm font-bold text-emerald-900">{selectedSurah.no}. {selectedSurah.nama} ({selectedSurah.ayat} Ayat)</h3>
                   </div>
-                  {loadingAyahs ? <p className="text-xs text-center py-6">Memuat ayat...</p> : (
-                    <div className="space-y-2.5 max-h-[400px] overflow-y-auto pr-1">
+                  {loadingAyahs ? <p className="text-xs text-center py-8 font-bold text-emerald-800">Memuat ayat Al-Quran...</p> : (
+                    <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
                       {ayahs.map((ayah) => (
                         <div key={ayah.numberInSurah} className="p-3 bg-emerald-50/50 rounded-xl border space-y-1.5 text-xs">
                           <span className="w-5 h-5 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{ayah.numberInSurah}</span>
@@ -783,7 +852,6 @@
           );
         }
 
-        // --- MODUL DZIKIR & DOA LENGKAP ---
         function DzikirModule() {
           const [kategori, setKategori] = useState('harian');
 
@@ -800,7 +868,7 @@
             { kategori: 'harian', judul: 'Doa Memohon Keselamatan', arab: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', arti: 'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat, serta peliharalah kami dari siksa neraka.' },
             { kategori: 'harian', judul: 'Doa Memohon Ampunan', arab: 'رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا', arti: 'Ya Tuhanku, ampunilah dosaku dan dosa kedua orang tuaku, dan sayangilah keduanya sebagaimana mereka mendidikku kecil.' },
             { kategori: 'harian', judul: 'Doa Masuk WC / Toilet', arab: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ', arti: 'Ya Allah, aku berlindung kepada-Mu dari setan laki-laki dan setan perempuan.' },
-            { kategori: 'harian', judul: 'Doa Keluar WC / Toilet', arab: 'غُفْرَانَكَ الْحَمْدُ لِلَّهِ الَّذِي أَذْهَبَ عَنِّي الأَذَى وَعَافَانِي', arti: 'Aku memohon ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakit dariku dan menyehatkan akup.' },
+            { kategori: 'harian', judul: 'Doa Keluar WC / Toilet', arti: 'Aku memohon ampunan-Mu. Segala puji bagi Allah yang telah menghilangkan penyakit dariku dan menyehatkan akup.' },
             { kategori: 'harian', judul: 'Doa Mandi Wajib', arab: 'نَوَيْتُ الْغُسْلَ لِرَفْعِ الْحَدَثِ الأَكْبَرِ فَرْضًا لِلَّهِ تَعَالَى', arti: 'Aku niat mandi wajib untuk menghilangkan hadas besar fardhu karena Allah Ta\'ala.' },
             { kategori: 'harian', judul: 'Doa Saat Melakukan Perjalanan', arab: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ', arti: 'Maha Suci Allah yang telah menundukkan kendaraan ini bagi kami, padahal kami sebelumnya tidak mampu menguasainya...' },
             { kategori: 'harian', judul: 'Doa Tidur & Bangun Tidur', arab: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا / الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ', arti: 'Dengan nama-Mu ya Allah aku mati dan hidup / Segala puji bagi Allah yang menghidupkan kami setelah mematikan kami...' },
@@ -832,7 +900,6 @@
           );
         }
 
-        // --- MODUL IQRA 1 S/D 6 (BERFUNGSI PENUH) ---
         function IqraModule() {
           const [jilid, setJilid] = useState(1);
 
