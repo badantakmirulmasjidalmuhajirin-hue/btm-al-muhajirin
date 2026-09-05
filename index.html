@@ -29,7 +29,11 @@
             return savedUser ? JSON.parse(savedUser) : null;
           });
 
-          const [activeMenu, setActiveMenu] = useState('home');
+          // PERBAIKAN: Mengambil activeMenu dari localStorage agar tidak kembali ke beranda saat refresh
+          const [activeMenu, setActiveMenu] = useState(() => {
+            return localStorage.getItem('masjid_activeMenu') || 'home';
+          });
+
           const [currentTime, setCurrentTime] = useState(new Date());
           const [installPrompt, setInstallPrompt] = useState(null);
           const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -42,6 +46,11 @@
               localStorage.removeItem('masjid_user');
             }
           }, [user]);
+
+          // PERBAIKAN: Simpan activeMenu ke localStorage setiap kali berubah
+          useEffect(() => {
+            localStorage.setItem('masjid_activeMenu', activeMenu);
+          }, [activeMenu]);
 
           useEffect(() => {
             const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -322,7 +331,7 @@
           return (
             <div className="min-h-screen w-full bg-emerald-950 p-4 md:p-6 flex flex-col justify-center items-center">
               <div className="max-w-4xl w-full space-y-4 my-auto">
-                <div className="bg-white/15 backdrop-blur-md rounded-xl p-4 text-white border border-white/20 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="bg-white/15 backdrop-blur-md rounded-xl p-4 text-white border border-white/25 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
                   <div className="flex items-center gap-3">
                     <img src={profilMasjid.logoUrl} alt="Logo Masjid" className="w-14 h-14 md:w-20 md:h-20 rounded-full object-cover border-2 border-yellow-400 shadow-md bg-white flex-shrink-0" />
                     <div>
