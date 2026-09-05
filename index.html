@@ -628,7 +628,7 @@
             { no: 40, nama: 'Gafir', arti: 'Yang Mengampuni', ayat: 85, juz: 24, arab: 'غافر' },
             { no: 41, nama: 'Fussilat', arti: 'Yang Dijelaskan', ayat: 54, juz: '24 - 25', arab: 'فصلت' },
             { no: 42, nama: 'Asy-Syura', arti: 'Musyawarah', ayat: 53, juz: 25, arab: 'الشورى' },
-            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', ayat: 89, juz: 25, arab: 'الزخruf' },
+            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', arab: 'الزخruf', ayat: 89, juz: 25 },
             { no: 44, nama: 'Ad-Dukhan', arti: 'Kabut', ayat: 59, juz: 25, arab: 'الدخان' },
             { no: 45, nama: 'Al-Jasiyah', arti: 'Yang Berlutut', ayat: 37, juz: 25, arab: 'الجاثية' },
             { no: 46, nama: 'Al-Ahqaf', arti: 'Bukit Pasir', ayat: 35, juz: 26, arab: 'الأحقاف' },
@@ -1097,26 +1097,62 @@
           );
         }
 
-        // --- MODUL DATA JAMAAH ---
+        // --- MODUL DATA JAMAAH (DENGAN HAK AKSES SUPER ADMIN: TAMBAH, EDIT, HAPUS) ---
         function JamaahModule({ jamaahList, setJamaahList, user, credentialsBTM, setCredentialsBTM }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [form, setForm] = useState({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
+          const [editIndex, setEditIndex] = useState(null); // Menyimpan index data yang sedang diedit
           const [btmUserForm, setBtmUserForm] = useState(credentialsBTM.user);
           const [btmPassForm, setBtmPassForm] = useState(credentialsBTM.pass);
 
-          const handleAddJamaah = (e) => {
+          const handleSaveJamaah = (e) => {
             e.preventDefault();
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak! Hanya Super Admin yang dapat memodifikasi data jamaah.');
+              return;
+            }
             if (!form.no_kk || !form.nama || !form.password) {
               alert('Nomor KK, Nama, dan Password wajib diisi!');
               return;
             }
-            if (jamaahList.some(item => item.no_kk.trim() === form.no_kk.trim())) {
-              alert(`Nomor KK "${form.no_kk}" sudah terdaftar.`);
+
+            if (editIndex !== null) {
+              // Mode Edit / Merubah Data
+              const updatedList = [...jamaahList];
+              updatedList[editIndex] = { ...form, jumlah: parseInt(form.jumlah) || 1 };
+              setJamaahList(updatedList);
+              setEditIndex(null);
+              alert('Data jamaah berhasil diperbarui.');
+            } else {
+              // Mode Tambah Data Baru
+              if (jamaahList.some(item => item.no_kk.trim() === form.no_kk.trim())) {
+                alert(`Nomor KK "${form.no_kk}" sudah terdaftar.`);
+                return;
+              }
+              setJamaahList([...jamaahList, { ...form, jumlah: parseInt(form.jumlah) || 1 }]);
+              alert('Data keluarga jamaah berhasil ditambahkan.');
+            }
+
+            setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
+          };
+
+          const handleEditClick = (item, index) => {
+            if (user.role !== 'super_admin') return;
+            setForm(item);
+            setEditIndex(index);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          };
+
+          const handleDeleteJamaah = (index) => {
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak! Hanya Super Admin yang dapat menghapus data jamaah.');
               return;
             }
-            setJamaahList([...jamaahList, { ...form, jumlah: parseInt(form.jumlah) || 1 }]);
-            setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
-            alert('Data keluarga jamaah berhasil ditambahkan.');
+            if (confirm('Apakah Anda yakin ingin menghapus data jamaah ini?')) {
+              const updatedList = jamaahList.filter((_, i) => i !== index);
+              setJamaahList(updatedList);
+              alert('Data jamaah berhasil dihapus.');
+            }
           };
 
           const handleUpdateBTMAuth = (e) => {
@@ -1138,19 +1174,30 @@
                 <input type="text" placeholder="Cari No KK / Nama / HP..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full md:w-64 p-2 border border-emerald-300 rounded-lg text-xs" />
               </div>
 
-              <form onSubmit={handleAddJamaah} className="p-3 bg-emerald-50 rounded-xl border space-y-2">
-                <h4 className="font-bold text-emerald-900 text-xs">➕ Tambah Keluarga Baru</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <input type="text" placeholder="Nomor KK (Username)" className="p-1.5 border rounded text-xs bg-white" value={form.no_kk} onChange={(e) => setForm({...form, no_kk: e.target.value})} required />
-                  <input type="text" placeholder="Nama Kepala Keluarga" className="p-1.5 border rounded text-xs bg-white" value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} required />
-                  <input type="password" placeholder="Password Jamaah" className="p-1.5 border rounded text-xs bg-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} required />
-                  <input type="text" placeholder="No KTP" className="p-1.5 border rounded text-xs bg-white" value={form.ktp} onChange={(e) => setForm({...form, ktp: e.target.value})} />
-                  <input type="text" placeholder="No HP / WhatsApp" className="p-1.5 border rounded text-xs bg-white" value={form.hp} onChange={(e) => setForm({...form, hp: e.target.value})} />
-                  <input type="text" placeholder="Alamat" className="p-1.5 border rounded text-xs bg-white" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} />
-                </div>
-                <input type="text" placeholder="Anggota Keluarga (pisahkan koma)" className="w-full p-1.5 border rounded text-xs bg-white" value={form.anggota} onChange={(e) => setForm({...form, anggota: e.target.value})} />
-                <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold text-xs">Simpan Data</button>
-              </form>
+              {user.role === 'super_admin' && (
+                <form onSubmit={handleSaveJamaah} className="p-3 bg-emerald-50 rounded-xl border space-y-2">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-bold text-emerald-900 text-xs">
+                      {editIndex !== null ? '✏️ Ubah Data Jamaah' : '➕ Tambah Keluarga Baru'}
+                    </h4>
+                    {editIndex !== null && (
+                      <button type="button" onClick={() => { setEditIndex(null); setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' }); }} className="text-[10px] text-red-600 font-bold">Batal Edit</button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="text" placeholder="Nomor KK (Username)" className="p-1.5 border rounded text-xs bg-white" value={form.no_kk} onChange={(e) => setForm({...form, no_kk: e.target.value})} required />
+                    <input type="text" placeholder="Nama Kepala Keluarga" className="p-1.5 border rounded text-xs bg-white" value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} required />
+                    <input type="text" placeholder="Password Jamaah" className="p-1.5 border rounded text-xs bg-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} required />
+                    <input type="text" placeholder="No KTP" className="p-1.5 border rounded text-xs bg-white" value={form.ktp} onChange={(e) => setForm({...form, ktp: e.target.value})} />
+                    <input type="text" placeholder="No HP / WhatsApp" className="p-1.5 border rounded text-xs bg-white" value={form.hp} onChange={(e) => setForm({...form, hp: e.target.value})} />
+                    <input type="text" placeholder="Alamat" className="p-1.5 border rounded text-xs bg-white" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} />
+                  </div>
+                  <input type="text" placeholder="Anggota Keluarga (pisahkan koma)" className="w-full p-1.5 border rounded text-xs bg-white" value={form.anggota} onChange={(e) => setForm({...form, anggota: e.target.value})} />
+                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold text-xs">
+                    {editIndex !== null ? 'Perbarui Data Jamaah' : 'Simpan Data'}
+                  </button>
+                </form>
+              )}
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200 text-xs">
@@ -1162,20 +1209,31 @@
                       <th className="border p-1.5">Alamat</th>
                       <th className="border p-1.5">Jumlah</th>
                       <th className="border p-1.5">Anggota Keluarga</th>
+                      {user.role === 'super_admin' && <th className="border p-1.5">Aksi</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredJamaah.length > 0 ? filteredJamaah.map((item, idx) => (
-                      <tr key={idx} className="text-center">
-                        <td className="border p-1.5 font-semibold text-emerald-700">{item.no_kk}</td>
-                        <td className="border p-1.5 font-bold text-emerald-950">{item.nama}</td>
-                        <td className="border p-1.5">{item.hp}</td>
-                        <td className="border p-1.5">{item.alamat}</td>
-                        <td className="border p-1.5">{item.jumlah}</td>
-                        <td className="border p-1.5 text-left text-[11px]">{item.anggota}</td>
-                      </tr>
-                    )) : (
-                      <tr><td colSpan="6" className="p-3 text-center text-gray-500 text-xs">Jamaah tidak ditemukan.</td></tr>
+                    {filteredJamaah.length > 0 ? filteredJamaah.map((item, idx) => {
+                      // Mencari index asli di array utama jamaahList jika menggunakan filter pencarian
+                      const originalIndex = jamaahList.findIndex(j => j.no_kk === item.no_kk);
+                      return (
+                        <tr key={idx} className="text-center">
+                          <td className="border p-1.5 font-semibold text-emerald-700">{item.no_kk}</td>
+                          <td className="border p-1.5 font-bold text-emerald-950">{item.nama}</td>
+                          <td className="border p-1.5">{item.hp}</td>
+                          <td className="border p-1.5">{item.alamat}</td>
+                          <td className="border p-1.5">{item.jumlah}</td>
+                          <td className="border p-1.5 text-left text-[11px]">{item.anggota}</td>
+                          {user.role === 'super_admin' && (
+                            <td className="border p-1.5 space-x-1 whitespace-nowrap">
+                              <button onClick={() => handleEditClick(item, originalIndex)} className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-blue-700">Edit</button>
+                              <button onClick={() => handleDeleteJamaah(originalIndex)} className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-red-700">Hapus</button>
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    }) : (
+                      <tr><td colSpan={user.role === 'super_admin' ? "7" : "6"} className="p-3 text-center text-gray-500 text-xs">Jamaah tidak ditemukan.</td></tr>
                     )}
                   </tbody>
                 </table>
