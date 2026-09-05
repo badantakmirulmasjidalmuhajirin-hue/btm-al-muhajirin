@@ -4,16 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Masjid Al-Muhajirin Wawonasa</title>
-    <!-- Ikon Website / Favicon untuk Laptop & HP -->
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="apple-touch-icon" href="logo.jpg">
     
-    <!-- Tailwind CSS untuk Desain Modern -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel untuk JSX -->
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen m-0 p-0">
@@ -158,7 +154,6 @@
 
           return (
             <div className="min-h-screen w-full flex flex-col relative bg-gray-50 pb-10">
-              {/* NOTIFIKASI INSTAL KE LAYAR UTAMA (MUNCUL OTOMATIS) */}
               {showInstallBanner && (
                 <div className="absolute top-0 left-0 right-0 z-50 bg-yellow-400 text-emerald-950 p-3 shadow-lg flex justify-between items-center px-4 animate-bounce">
                   <div className="flex items-center space-x-2">
@@ -422,7 +417,6 @@
           );
         }
 
-        // --- LAYAR UTAMA (RESPONSIVE HEIGHT & FLEXIBLE) ---
         function MainLayout({ user, onLogout, activeMenu, setActiveMenu, keuangan, setKeuangan, jamaahList, setJamaahList, strukturBTM, setStrukturBTM, profilMasjid, setProfilMasjid, credentialsBTM, setCredentialsBTM, currentTime, onInstallClick }) {
           const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -441,7 +435,6 @@
 
           return (
             <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-50">
-              {/* SIDEBAR NAVIGASI (DESKTOP) */}
               <div className="hidden md:flex w-64 bg-emerald-950 text-white p-4 flex-col justify-between shadow-lg flex-shrink-0 min-h-screen">
                 <div>
                   <div className="flex items-center space-x-2.5 mb-4 pb-3 border-b border-emerald-800">
@@ -463,7 +456,6 @@
                 </div>
               </div>
 
-              {/* HEADER MOBILE & MENU DROPDOWN */}
               <div className="md:hidden bg-emerald-950 text-white p-3 flex justify-between items-center shadow-md flex-shrink-0 sticky top-0 z-30">
                 <div className="flex items-center space-x-2">
                   <img src={profilMasjid.logoUrl} alt="Logo" className="w-7 h-7 rounded-full object-cover border border-yellow-400 bg-white" />
@@ -477,7 +469,6 @@
                 </div>
               </div>
 
-              {/* DROPDOWN MENU MOBILE */}
               {mobileMenuOpen && (
                 <div className="md:hidden absolute top-12 left-0 right-0 z-40 bg-emerald-950 text-white p-3 shadow-xl border-b border-emerald-800">
                   <div className="grid grid-cols-2 gap-1.5">
@@ -489,7 +480,6 @@
                 </div>
               )}
 
-              {/* KONTEN UTAMA */}
               <div className="flex-1 flex flex-col p-3 md:p-6 pb-12">
                 <header className="flex justify-between items-center mb-3 pb-2 border-b flex-shrink-0">
                   <h2 className="text-sm md:text-base font-bold text-emerald-900 capitalize">{activeMenu.replace('_', ' ')}</h2>
@@ -513,7 +503,6 @@
           );
         }
 
-        // --- MODUL BERANDA & PROFIL ---
         function HomeModule({ profil, setProfilMasjid, user }) {
           const [editMode, setEditMode] = useState(false);
           const [form, setForm] = useState(profil);
@@ -564,7 +553,6 @@
           );
         }
 
-        // --- MODUL SHOLAT ---
         function SholatModule() {
           const { jadwal, lokasiNama, loading, error, fetchJadwalByCity, deteksiLokasiGPS } = useJadwalSholat();
 
@@ -613,7 +601,6 @@
           );
         }
 
-        // --- MODUL QURAN ---
         function QuranModule() {
           const [search, setSearch] = useState('');
           const [selectedSurah, setSelectedSurah] = useState(null);
@@ -633,7 +620,7 @@
             { no: 10, nama: 'Yunus', arti: 'Nabi Yunus', ayat: 109, juz: 11, arab: 'يونس' },
             { no: 11, nama: 'Hud', arti: 'Nabi Hud', ayat: 123, juz: '11 - 12', arab: 'هود' },
             { no: 12, nama: 'Yusuf', arti: 'Nabi Yusuf', ayat: 111, juz: '12 - 13', arab: 'يوسف' },
-            { no: 13, nama: 'Ar-Ra\'d', arti: 'Guntur', ayat: 43, juz: 13, arab: 'الرعد' },
+            { no: 13, nama: 'Ar-Ra\'d', arti: 'Guruh', ayat: 43, juz: 13, arab: 'الرعد' },
             { no: 14, nama: 'Ibrahim', arti: 'Nabi Ibrahim', ayat: 52, juz: 13, arab: 'إبراهيم' },
             { no: 15, nama: 'Al-Hijr', arti: 'Negeri Al-Hijr', ayat: 99, juz: 14, arab: 'الحجر' },
             { no: 16, nama: 'An-Nahl', arti: 'Lebah', ayat: 128, juz: 14, arab: 'النحل' },
@@ -645,33 +632,33 @@
             { no: 22, nama: 'Al-Hajj', arti: 'Haji', ayat: 78, juz: 17, arab: 'الحج' },
             { no: 23, nama: 'Al-Mu\'minun', arti: 'Orang-orang Mukmin', ayat: 118, juz: 18, arab: 'المؤمنون' },
             { no: 24, nama: 'An-Nur', arti: 'Cahaya', ayat: 64, juz: 18, arab: 'النور' },
-            { no: 25, nama: 'Al-Furqan', arti: 'Pembeda', ayat: 77, juz: '18 - 19', arab: 'الفرقان' },
+            { no: 25, nama: 'Al-Furqan', arti: 'Pembeda', ayat: 77, juz: 19, arab: 'الفرقان' },
             { no: 26, nama: 'Asy-Syu\'ara\'', arti: 'Para Penyair', ayat: 227, juz: 19, arab: 'الشعراء' },
             { no: 27, nama: 'An-Naml', arti: 'Semut', ayat: 93, juz: '19 - 20', arab: 'النمل' },
             { no: 28, nama: 'Al-Qasas', arti: 'Kisah-kisah', ayat: 88, juz: 20, arab: 'القصص' },
-            { no: 29, nama: 'Al-\'Ankabut', arti: 'Laba-laba', ayat: 69, juz: '20 - 21', arab: 'العنكبوت' },
+            { no: 29, nama: 'Al-'Ankabut', arti: 'Laba-laba', ayat: 69, juz: '20 - 21', arab: 'العنكبوت' },
             { no: 30, nama: 'Ar-Rum', arti: 'Bangsa Romawi', ayat: 60, juz: 21, arab: 'الروم' },
-            { no: 31, nama: 'Luqman', arti: 'Luqman', ayat: 34, juz: 21, arab: 'لقمان' },
+            { no: 31, nama: 'Luqman', arti: 'Keluarga Luqman', ayat: 34, juz: 21, arab: 'لقمان' },
             { no: 32, nama: 'As-Sajdah', arti: 'Sujud', ayat: 30, juz: 21, arab: 'السجدة' },
-            { no: 33, nama: 'Al-Ahzab', arti: 'Golongan yang Bersekutu', ayat: 73, juz: '21 - 22', arab: 'الأحزاب' },
+            { no: 33, nama: 'Al-Ahzab', arti: 'Golongan-golongan yang Bersekutu', ayat: 73, juz: '21 - 22', arab: 'الأحزاب' },
             { no: 34, nama: 'Saba\'', arti: 'Kaum Saba\'', ayat: 54, juz: 22, arab: 'سبأ' },
             { no: 35, nama: 'Fatir', arti: 'Pencipta', ayat: 45, juz: 22, arab: 'فاطر' },
-            { no: 36, nama: 'Yasin', arti: 'Yasin', ayat: 83, juz: '22 - 23', arab: 'يس' },
-            { no: 37, nama: 'As-Saffat', arti: 'Saf-saf', ayat: 182, juz: 23, arab: 'الصافات' },
+            { no: 36, nama: 'Ya-Sin', arti: 'Ya Sin', ayat: 83, juz: '22 - 23', arab: 'يس' },
+            { no: 37, nama: 'As-Saffat', arti: 'Sif-saff yang Bershaf-shaf', ayat: 182, juz: 23, arab: 'الصافات' },
             { no: 38, nama: 'Sad', arti: 'Huruf Sad', ayat: 88, juz: 23, arab: 'ص' },
             { no: 39, nama: 'Az-Zumar', arti: 'Rombongan', ayat: 75, juz: '23 - 24', arab: 'الزمر' },
             { no: 40, nama: 'Gafir', arti: 'Yang Mengampuni', ayat: 85, juz: 24, arab: 'غافر' },
             { no: 41, nama: 'Fussilat', arti: 'Yang Dijelaskan', ayat: 54, juz: '24 - 25', arab: 'فصلت' },
             { no: 42, nama: 'Asy-Syura', arti: 'Musyawarah', ayat: 53, juz: 25, arab: 'الشورى' },
-            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', arab: 'الزخruf', ayat: 89, juz: 25 },
+            { no: 43, nama: 'Az-Zukhruf', arti: 'Perhiasan', ayat: 89, juz: 25, arab: 'الزخرف' },
             { no: 44, nama: 'Ad-Dukhan', arti: 'Kabut', ayat: 59, juz: 25, arab: 'الدخان' },
             { no: 45, nama: 'Al-Jasiyah', arti: 'Yang Berlutut', ayat: 37, juz: 25, arab: 'الجاثية' },
-            { no: 46, nama: 'Al-Ahqaf', arti: 'Bukit Pasir', ayat: 35, juz: 26, arab: 'الأحقاف' },
+            { no: 46, nama: 'Al-Ahqaf', arti: 'Bukit-bukit Pasir', ayat: 35, juz: 26, arab: 'الأحقاف' },
             { no: 47, nama: 'Muhammad', arti: 'Nabi Muhammad', ayat: 38, juz: 26, arab: 'محمد' },
             { no: 48, nama: 'Al-Fath', arti: 'Kemenangan', ayat: 29, juz: 26, arab: 'الفتح' },
             { no: 49, nama: 'Al-Hujurat', arti: 'Kamar-kamar', ayat: 18, juz: 26, arab: 'الحجرات' },
             { no: 50, nama: 'Qaf', arti: 'Huruf Qaf', ayat: 45, juz: 26, arab: 'ق' },
-            { no: 51, nama: 'Ad-Zariyat', arti: 'Angin yang Menerbangkan', ayat: 60, juz: 26, arab: 'الذاريات' },
+            { no: 51, nama: 'Adz-Dzariyat', arti: 'Angin yang Menerbangkan', ayat: 60, juz: '26 - 27', arab: 'الذاريات' },
             { no: 52, nama: 'At-Tur', arti: 'Bukit', ayat: 49, juz: 27, arab: 'الطور' },
             { no: 53, nama: 'An-Najm', arti: 'Bintang', ayat: 62, juz: 27, arab: 'النجم' },
             { no: 54, nama: 'Al-Qamar', arti: 'Bulan', ayat: 55, juz: 27, arab: 'القمر' },
@@ -680,7 +667,7 @@
             { no: 57, nama: 'Al-Hadid', arti: 'Besi', ayat: 29, juz: 27, arab: 'الحديد' },
             { no: 58, nama: 'Al-Mujadilah', arti: 'Wanita yang Mengajukan Gugatan', ayat: 22, juz: 28, arab: 'المجادلة' },
             { no: 59, nama: 'Al-Hasyr', arti: 'Pengusiran', ayat: 24, juz: 28, arab: 'الحشر' },
-            { no: 60, nama: 'Al-Mumtahanah', arti: 'Wanita yang Diuji', ayat: 13, juz: 28, arab: 'الممتحنة' },
+            { no: 60, nama: 'Al-Mumtahanah', arti: 'Wanita yang Diuji', ayat: 13, juz: 28, arab: 'المممتحنة' },
             { no: 61, nama: 'As-Saff', arti: 'Barisan', ayat: 14, juz: 28, arab: 'الصف' },
             { no: 62, nama: 'Al-Jumu\'ah', arti: 'Hari Jumat', ayat: 11, juz: 28, arab: 'الجمعة' },
             { no: 63, nama: 'Al-Munafiqun', arti: 'Orang-orang Munafik', ayat: 11, juz: 28, arab: 'المنافقون' },
@@ -694,19 +681,19 @@
             { no: 71, nama: 'Nuh', arti: 'Nabi Nuh', ayat: 28, juz: 29, arab: 'نوح' },
             { no: 72, nama: 'Al-Jinn', arti: 'Jin', ayat: 28, juz: 29, arab: 'الجن' },
             { no: 73, nama: 'Al-Muzzammil', arti: 'Orang yang Berselimut', ayat: 20, juz: 29, arab: 'المزمل' },
-            { no: 74, nama: 'Al-Mudassir', arti: 'Orang yang Berkemul', ayat: 56, juz: 29, arab: 'المدثر' },
+            { no: 74, nama: 'Al-Muddassir', arti: 'Orang yang Berkemul', ayat: 56, juz: 29, arab: 'المدثر' },
             { no: 75, nama: 'Al-Qiyamah', arti: 'Kiamat', ayat: 40, juz: 29, arab: 'القيامة' },
-            { no: 76, nama: 'Al-Insan', arti: 'Manusia', ayat: 31, juz: 29, arab: 'الإنسان' },
+            { no: 76, nama: 'Al-Insan', arti: 'Manusia', ayat: 31, juz: 29, arab: 'الانسان' },
             { no: 77, nama: 'Al-Mursalat', arti: 'Malaikat yang Diutus', ayat: 50, juz: 29, arab: 'المرسلات' },
             { no: 78, nama: 'An-Naba\'', arti: 'Berita Besar', ayat: 40, juz: 30, arab: 'النبأ' },
-            { no: 79, nama: 'An-Nazi\'at', arti: 'Malaikat Pencabut', ayat: 46, juz: 30, arab: 'النازعات' },
-            { no: 80, nama: 'Abasa', arti: 'Bermuka Masam', ayat: 42, juz: 30, arab: 'عبس' },
+            { no: 79, nama: 'An-Nazi\'at', arti: 'Malaikat yang Mencabut', ayat: 46, juz: 30, arab: 'النازعات' },
+            { no: 80, nama: '\'Abasa', arti: 'Ia Bermuka Masam', ayat: 42, juz: 30, arab: 'عبس' },
             { no: 81, nama: 'At-Takwir', arti: 'Menggulung', ayat: 29, juz: 30, arab: 'التكوير' },
             { no: 82, nama: 'Al-Infitar', arti: 'Terbelah', ayat: 19, juz: 30, arab: 'الانفطار' },
-            { no: 83, nama: 'Al-Mutaffifin', arti: 'Orang Curang', ayat: 36, juz: 30, arab: 'المطففين' },
-            { no: 84, nama: 'Al-Inyiqaq', arti: 'Terbelah', ayat: 25, juz: 30, arab: 'الانشقاق' },
+            { no: 83, nama: 'Al-Mutaffifin', arti: 'Orang-orang Curang', ayat: 36, juz: 30, arab: 'المطففين' },
+            { no: 84, nama: 'Al-Insyiqaq', arti: 'Terbelah', ayat: 25, juz: 30, arab: 'الانشقاق' },
             { no: 85, nama: 'Al-Buruj', arti: 'Gugusan Bintang', ayat: 22, juz: 30, arab: 'البروج' },
-            { no: 86, nama: 'At-Tariq', arti: 'Yang Datang Malam', ayat: 17, juz: 30, arab: 'الطارق' },
+            { no: 86, nama: 'At-Tariq', arti: 'Yang Datang di Malam Hari', ayat: 17, juz: 30, arab: 'الطارق' },
             { no: 87, nama: 'Al-A\'la', arti: 'Yang Paling Tinggi', ayat: 19, juz: 30, arab: 'الأعلى' },
             { no: 88, nama: 'Al-Gasyiyah', arti: 'Hari Kiamat', ayat: 26, juz: 30, arab: 'الغاشية' },
             { no: 89, nama: 'Al-Fajr', arti: 'Fajar', ayat: 30, juz: 30, arab: 'الفجر' },
@@ -719,17 +706,17 @@
             { no: 96, nama: 'Al-Alaq', arti: 'Segumpal Darah', ayat: 19, juz: 30, arab: 'العلق' },
             { no: 97, nama: 'Al-Qadr', arti: 'Kemuliaan', ayat: 5, juz: 30, arab: 'القدر' },
             { no: 98, nama: 'Al-Bayyinah', arti: 'Pembuktian', ayat: 8, juz: 30, arab: 'البينة' },
-            { no: 99, nama: 'Az-Zalzalah', arti: 'Kegoncangan', ayat: 8, juz: 30, arab: 'الزلزال' },
-            { no: 100, nama: 'Al-\'Adiyat', arti: 'Kuda Perang', ayat: 11, juz: 30, arab: 'العاديات' },
+            { no: 99, nama: 'Az-Zalzalah', arti: 'Kegoncangan', ayat: 8, juz: 30, arab: 'الزلزلة' },
+            { no: 100, nama: 'Al-\'Adiyat', arti: 'Kuda Perang yang Berlari Kencang', ayat: 11, juz: 30, arab: 'العاديات' },
             { no: 101, nama: 'Al-Qari\'ah', arti: 'Hari Kiamat', ayat: 11, juz: 30, arab: 'القارعة' },
             { no: 102, nama: 'At-Takasur', arti: 'Bermegah-megahan', ayat: 8, juz: 30, arab: 'التكاثر' },
-            { no: 103, nama: 'Al-\'Asr', arti: 'Masa / Waktu', ayat: 3, juz: 30, arab: 'العصر' },
+            { no: 103, nama: 'Al-\'Asr', arti: 'Masa', ayat: 3, juz: 30, arab: 'العصر' },
             { no: 104, nama: 'Al-Humazah', arti: 'Pengumpat', ayat: 9, juz: 30, arab: 'الهمزة' },
             { no: 105, nama: 'Al-Fil', arti: 'Gajah', ayat: 5, juz: 30, arab: 'الفيل' },
             { no: 106, nama: 'Quraisy', arti: 'Suku Quraisy', ayat: 4, juz: 30, arab: 'قريش' },
-            { no: 107, nama: 'Al-Ma\'un', arti: 'Barang Berguna', ayat: 7, juz: 30, arab: 'الماعون' },
-            { no: 108, nama: 'Al-Kautsar', arti: 'Nikmat Berlimpah', ayat: 3, juz: 30, arab: 'الكوثر' },
-            { no: 109, nama: 'Al-Kafirun', arti: 'Orang Kafir', ayat: 6, juz: 30, arab: 'الكافرون' },
+            { no: 107, nama: 'Al-Ma\'un', arti: 'Barang-barang yang Berguna', ayat: 7, juz: 30, arab: 'الماعون' },
+            { no: 108, nama: 'Al-Kausar', arti: 'Nikmat yang Berlimpah', ayat: 3, juz: 30, arab: 'الكوثر' },
+            { no: 109, nama: 'Al-Kafirun', arti: 'Orang-orang Kafir', ayat: 6, juz: 30, arab: 'الكافرون' },
             { no: 110, nama: 'An-Nasr', arti: 'Pertolongan', ayat: 3, juz: 30, arab: 'النصر' },
             { no: 111, nama: 'Al-Lahab', arti: 'Gejolak Api', ayat: 5, juz: 30, arab: 'المسد' },
             { no: 112, nama: 'Al-Ikhlas', arti: 'Keesaan Allah', ayat: 4, juz: 30, arab: 'الإخلاص' },
@@ -778,79 +765,58 @@
                       <h3 className="text-base font-bold text-emerald-900">📖 Al-Quran Digital (30 Juz & 114 Surah)</h3>
                       <p className="text-[10px] text-gray-500">Klik salah satu surah untuk membaca teks Arab dan terjemahan.</p>
                     </div>
-                    <input 
-                      type="text" 
-                      placeholder="Cari Surah / Arti / No Juz..." 
-                      value={search} 
-                      onChange={(e) => setSearch(e.target.value)} 
-                      className="w-full md:w-64 p-2 border border-emerald-300 rounded-lg text-xs" 
-                    />
+                    <input type="text" placeholder="Cari Surah / Arti / No Juz..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full md:w-64 p-2 border border-emerald-300 rounded-lg text-xs" />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-1">
-                    {filtered.length > 0 ? filtered.map((surah) => (
-                      <div 
-                        key={surah.no} 
-                        onClick={() => handleSelectSurah(surah)}
-                        className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 flex justify-between items-center shadow-sm hover:bg-emerald-100 transition cursor-pointer"
-                      >
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="w-6 h-6 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{surah.no}</span>
-                            <h4 className="font-bold text-emerald-950 text-xs">{surah.nama}</h4>
-                          </div>
-                          <p className="text-[10px] text-gray-600 mt-0.5">Arti: {surah.arti}</p>
-                          <div className="flex gap-1.5 mt-1.5">
-                            <span className="text-[9px] bg-emerald-200 text-emerald-900 px-1 py-0.5 rounded font-semibold">{surah.ayat} Ayat</span>
-                            <span className="text-[9px] bg-yellow-200 text-yellow-900 px-1 py-0.5 rounded font-semibold">Juz {surah.juz}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-[500px] overflow-y-auto pr-1">
+                    {filtered.map((s) => (
+                      <div key={s.no} onClick={() => handleSelectSurah(s)} className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 hover:bg-emerald-100/70 cursor-pointer transition flex justify-between items-center">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-7 h-7 bg-emerald-700 text-white rounded-lg flex items-center justify-center text-xs font-bold">{s.no}</span>
+                          <div>
+                            <h4 className="font-bold text-emerald-950 text-xs">{s.nama}</h4>
+                            <p className="text-[10px] text-gray-600">{s.arti} • {s.ayat} Ayat</p>
                           </div>
                         </div>
-                        <span className="text-lg font-bold text-emerald-900 font-serif">{surah.arab}</span>
+                        <span className="font-serif font-bold text-emerald-900 text-base">{s.arab}</span>
                       </div>
-                    )) : (
-                      <div className="col-span-3 text-center py-4 text-gray-500 text-xs">Surah tidak ditemukan.</div>
-                    )}
+                    ))}
                   </div>
                 </>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center pb-2 border-b">
+                  <div className="flex justify-between items-center bg-emerald-900 text-white p-3 rounded-xl">
                     <div>
-                      <button onClick={() => setSelectedSurah(null)} className="text-[10px] bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-2 py-1 rounded mb-1 transition">
-                        ← Kembali ke Daftar Surah
-                      </button>
-                      <h3 className="text-base font-bold text-emerald-900">{selectedSurah.no}. {selectedSurah.nama} ({selectedSurah.arab})</h3>
-                      <p className="text-[10px] text-gray-500">Arti: {selectedSurah.arti} | Ayat: {selectedSurah.ayat}</p>
+                      <h3 className="text-sm font-bold">{selectedSurah.no}. {selectedSurah.nama} ({selectedSurah.arab})</h3>
+                      <p className="text-[10px] text-emerald-200">{selectedSurah.arti} • {selectedSurah.ayat} Ayat • Juz {selectedSurah.juz}</p>
                     </div>
+                    <button onClick={() => setSelectedSurah(null)} className="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg text-xs font-bold transition">← Kembali ke Daftar Surah</button>
                   </div>
 
-                  {loadingAyahs ? (
-                    <div className="text-center py-8 text-emerald-800 font-semibold text-xs">Sedang memuat ayat...</div>
-                  ) : (
-                    <div className="space-y-3">
-                      {ayahs.map((ayah) => (
-                        <div key={ayah.numberInSurah} className="p-3 bg-emerald-50/40 rounded-xl border border-emerald-200 space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="w-6 h-6 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{ayah.numberInSurah}</span>
-                            {ayah.audio && (
-                              <audio controls className="h-7">
-                                <source src={ayah.audio} type="audio/mp3" />
-                              </audio>
-                            )}
-                          </div>
-                          <p className="text-xl text-right font-serif text-emerald-950 leading-loose">{ayah.text}</p>
-                          <p className="text-[11px] text-gray-700 leading-relaxed"><strong>Artinya:</strong> {ayah.translation}</p>
+                  {loadingAyahs && <p className="text-xs text-emerald-700 font-semibold text-center py-6">Memuat ayat Al-Quran...</p>}
+
+                  <div className="space-y-3 max-h-[550px] overflow-y-auto">
+                    {ayahs.map((ayah) => (
+                      <div key={ayah.numberInSurah} className="p-3 bg-emerald-50/40 rounded-xl border border-emerald-200 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="w-6 h-6 bg-emerald-700 text-white rounded-full flex items-center justify-center text-[10px] font-bold">{ayah.numberInSurah}</span>
+                          {ayah.audio && (
+                            <audio controls className="h-7">
+                              <source src={ayah.audio} type="audio/mp3" />
+                            </audio>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <p className="text-xl text-right font-serif text-emerald-950 leading-loose">{ayah.text}</p>
+                        <p className="text-[11px] text-gray-700 leading-relaxed"><strong>Artinya:</strong> {ayah.translation}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
           );
         }
 
-        // --- MODUL ZAKAT ---
         function ZakatModule() {
           const [jenisZakat, setJenisZakat] = useState('penghasilan');
           const [nominal, setNominal] = useState('');
@@ -869,38 +835,41 @@
             <div className="bg-white p-4 rounded-xl shadow border space-y-4">
               <h3 className="text-base font-bold text-emerald-900">🧮 Kalkulator Zakat Digital</h3>
               <div className="flex gap-1.5 flex-wrap">
-                <button onClick={() => { setJenisZakat('penghasilan'); setNominal(''); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'penghasilan' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Penghasilan</button>
-                <button onClick={() => { setJenisZakat('maal'); setNominal(''); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'maal' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Maal (Harta)</button>
-                <button onClick={() => { setJenisZakat('fitrah'); setJumlahJiwa(1); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'fitrah' ? 'bg-emerald-700 text-white' : 'bg-gray-100 text-emerald-900'}`}>Fitrah</button>
+                <button onClick={() => { setJenisZakat('penghasilan'); setNominal(''); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'penghasilan' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-900'}`}>Zakat Penghasilan</button>
+                <button onClick={() => { setJenisZakat('maal'); setNominal(''); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'maal' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-900'}`}>Zakat Maal (Harta)</button>
+                <button onClick={() => { setJenisZakat('fitrah'); setNominal(''); }} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jenisZakat === 'fitrah' ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-900'}`}>Zakat Fitrah</button>
               </div>
-              
-              <div className="p-4 bg-emerald-50 rounded-xl border space-y-3">
+
+              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-3">
                 {jenisZakat !== 'fitrah' ? (
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1">
-                      {jenisZakat === 'penghasilan' ? 'Pendapatan Bersih Per Bulan (Rp)' : 'Total Nilai Harta / Tabungan (Rp)'}
+                    <label className="block text-xs font-bold text-emerald-900 mb-1">
+                      {jenisZakat === 'penghasilan' ? 'Total Penghasilan per Bulan (Rp)' : 'Total Nilai Harta / Tabungan / Emas (Rp)'}
                     </label>
-                    <input type="number" placeholder="Contoh: 7500000" value={nominal} onChange={(e) => setNominal(e.target.value)} className="w-full p-2.5 border rounded-lg text-xs bg-white" />
-                    <p className="text-[10px] text-gray-500 mt-1">Zakat 2.5% jika telah memenuhi nishab.</p>
+                    <input type="number" className="w-full p-2 border rounded-lg text-xs bg-white" placeholder="Contoh: 7500000" value={nominal} onChange={(e) => setNominal(e.target.value)} />
+                    <p className="text-[10px] text-gray-500 mt-1">
+                      {jenisZakat === 'penghasilan' ? 'Nisab zakat penghasilan setara 85 gram emas per tahun (± Rp 6.000.000 / bulan).' : 'Nisab zakat maal setara 85 gram emas.'}
+                    </p>
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-700 mb-1">Jumlah Anggota Keluarga (Jiwa)</label>
-                    <input type="number" min="1" value={jumlahJiwa} onChange={(e) => setJumlahJiwa(e.target.value)} className="w-full p-2.5 border rounded-lg text-xs bg-white" />
-                    <p className="text-[10px] text-gray-500 mt-1">Standar: 2.5 kg beras per jiwa (Rp 15.000/kg).</p>
+                    <label className="block text-xs font-bold text-emerald-900 mb-1">Jumlah Anggota Keluarga (Jiwa)</label>
+                    <input type="number" min="1" className="w-full p-2 border rounded-lg text-xs bg-white" value={jumlahJiwa} onChange={(e) => setJumlahJiwa(e.target.value)} />
+                    <p className="text-[10px] text-gray-500 mt-1">1 Jiwa = 2.5 kg beras (dikonversi Rp {hargaBerasKg.toLocaleString('id-ID')} / kg).</p>
                   </div>
                 )}
-                
-                <div className="p-3 bg-white rounded-lg border shadow-sm">
-                  <p className="text-[10px] text-gray-500">Estimasi Zakat:</p>
-                  <p className="text-xl font-extrabold text-emerald-800 mt-0.5">Rp {hitungZakat().toLocaleString('id-ID')}</p>
+
+                <div className="p-3 bg-white rounded-lg border border-emerald-300 flex justify-between items-center">
+                  <div>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase">Estimasi Zakat yang Harus Dibayarkan:</p>
+                    <p className="text-base font-mono font-extrabold text-emerald-700">Rp {hitungZakat().toLocaleString('id-ID')}</p>
+                  </div>
                 </div>
               </div>
             </div>
           );
         }
 
-        // --- MODUL KIBLAT ---
         function KiblatModule() {
           return (
             <div className="bg-white p-4 rounded-xl shadow border space-y-4 text-center">
@@ -917,7 +886,6 @@
           );
         }
 
-        // --- MODUL DZIKIR & DOA ---
         function DzikirModule() {
           const [search, setSearch] = useState('');
           const daftarDoaLengkap = [
@@ -925,46 +893,31 @@
             { id: 2, kategori: 'Sholat', judul: 'Doa Ruku\'', arab: 'سُبْحَانَ رَبِّيَ الْعَظِيمِ وَبِحَمْدِهِ', arti: 'Maha Suci Tuhanku Yang Maha Agung...' },
             { id: 3, kategori: 'Sholat', judul: 'Doa Sujud', arab: 'سُبْحَانَ رَبِّيَ الأَعْلَى وَبِحَمْدِهِ', arti: 'Maha Suci Tuhanku Yang Maha Tinggi...' },
             { id: 4, kategori: 'Harian', judul: 'Sebelum Makan', arab: 'اللَّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا...', arti: 'Ya Allah, berkahilah kami...' },
-            { id: 5, kategori: 'Harian', judul: 'Sebelum Tidur', arab: 'بِاسْمِكَ اللَّهُمَّ أَحْيَا وَأَمُوتُ', arti: 'Dengan nama-Mu, ya Allah, aku hidup dan mati.' },
-            { id: 6, kategori: 'Perjalanan', judul: 'Keluar Rumah', arab: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ...', arti: 'Dengan nama Allah, aku bertawakal...' },
-            { id: 7, kategori: 'Perjalanan', judul: 'Naik Kendaraan', arab: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا...', arti: 'Maha Suci Allah yang menundukkan ini...' }
+            { id: 5, kategori: 'Harian', judul: 'Sesudah Makan', arab: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا...', arti: 'Segala puji bagi Allah...' }
           ];
 
-          const filtered = daftarDoaLengkap.filter(d => 
-            d.judul.toLowerCase().includes(search.toLowerCase()) || 
-            d.kategori.toLowerCase().includes(search.toLowerCase()) || 
-            d.arti.toLowerCase().includes(search.toLowerCase())
-          );
+          const filtered = daftarDoaLengkap.filter(d => d.judul.toLowerCase().includes(search.toLowerCase()) || d.kategori.toLowerCase().includes(search.toLowerCase()));
 
           return (
             <div className="bg-white p-4 rounded-xl shadow border space-y-4">
               <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-                <div>
-                  <h3 className="text-base font-bold text-emerald-900">📿 Dzikir & Doa Harian</h3>
-                  <p className="text-[10px] text-gray-500">Mencakup doa sholat, makan, tidur, dan perjalanan.</p>
-                </div>
-                <input type="text" placeholder="Cari doa..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full md:w-64 p-2 border border-emerald-300 rounded-lg text-xs" />
+                <h3 className="text-base font-bold text-emerald-900">📿 Dzikir & Doa Harian</h3>
+                <input type="text" placeholder="Cari Doa / Kategori..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-full md:w-64 p-2 border rounded-lg text-xs" />
               </div>
-
-              <div className="space-y-3">
-                {filtered.length > 0 ? filtered.map(item => (
-                  <div key={item.id} className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200 space-y-1.5 shadow-sm">
-                    <div className="flex justify-between items-center">
-                      <h4 className="font-bold text-emerald-950 text-xs">{item.judul}</h4>
-                      <span className="text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded-full font-semibold">{item.kategori}</span>
-                    </div>
-                    <p className="text-lg text-right font-serif text-emerald-900">{item.arab}</p>
-                    <p className="text-[11px] text-gray-600 italic">Artinya: "{item.arti}"</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {filtered.map(d => (
+                  <div key={d.id} className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-1.5">
+                    <span className="text-[10px] bg-emerald-700 text-white px-2 py-0.5 rounded font-bold">{d.kategori}</span>
+                    <h4 className="font-bold text-emerald-950 text-xs">{d.judul}</h4>
+                    <p className="text-lg text-right font-serif text-emerald-900">{d.arab}</p>
+                    <p className="text-[11px] text-gray-700"><strong>Artinya:</strong> {d.arti}</p>
                   </div>
-                )) : (
-                  <div className="text-center py-4 text-gray-500 text-xs">Doa tidak ditemukan.</div>
-                )}
+                ))}
               </div>
             </div>
           );
         }
 
-        // --- MODUL IQRA ---
         function IqraModule() {
           const [jilid, setJilid] = useState(1);
           const iqraData = {
@@ -981,17 +934,14 @@
               <h3 className="text-base font-bold text-emerald-900">📚 Materi Iqra (Jilid 1 - 6)</h3>
               <div className="flex gap-1.5 flex-wrap">
                 {[1, 2, 3, 4, 5, 6].map(j => (
-                  <button key={j} onClick={() => setJilid(j)} className={`px-3 py-1.5 rounded-lg font-bold text-xs transition ${jilid === j ? 'bg-emerald-700 text-white shadow' : 'bg-gray-100 text-emerald-900'}`}>Jilid {j}</button>
+                  <button key={j} onClick={() => setJilid(j)} className={`px-3 py-1.5 rounded-lg font-bold text-xs ${jilid === j ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-900'}`}>Jilid {j}</button>
                 ))}
               </div>
-
-              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 space-y-3">
-                <h4 className="font-extrabold text-emerald-950 text-xs">{iqraData[jilid].judul}</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-                  {iqraData[jilid].contoh.map((c, i) => (
-                    <div key={i} className="bg-white p-3 rounded-lg border border-emerald-100 text-center shadow-sm">
-                      <span className="text-xl font-bold text-emerald-900 font-serif">{c}</span>
-                    </div>
+              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-center space-y-3">
+                <h4 className="font-bold text-emerald-950 text-sm">{iqraData[jilid].judul}</h4>
+                <div className="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                  {iqraData[jilid].contoh.map((item, idx) => (
+                    <div key={idx} className="p-4 bg-white rounded-lg border border-emerald-300 text-2xl font-serif text-emerald-900 font-bold shadow-sm">{item}</div>
                   ))}
                 </div>
               </div>
@@ -999,41 +949,43 @@
           );
         }
 
-        // --- MODUL STRUKTUR BTM ---
         function StrukturModule({ struktur, setStrukturBTM, user }) {
-          const [edit, setEdit] = useState(false);
+          const [editMode, setEditMode] = useState(false);
           const [form, setForm] = useState(struktur);
 
           const handleSave = (e) => {
             e.preventDefault();
             setStrukturBTM(form);
-            setEdit(false);
-            alert('Struktur pengurus berhasil diperbarui!');
+            setEditMode(false);
+            alert('Struktur BTM berhasil diperbarui!');
           };
 
           return (
             <div className="bg-white p-4 rounded-xl shadow border space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-base font-bold text-emerald-900">Struktur Pengurus BTM</h3>
-                {user.role === 'super_admin' && (
-                  <button onClick={() => setEdit(!edit)} className="bg-emerald-700 text-white px-2.5 py-1 rounded text-xs font-bold">
-                    {edit ? 'Tutup' : '✏️ Ubah'}
+                <h3 className="text-base font-bold text-emerald-900">🏛️ Struktur Pengurus BTM (2026 - 2029)</h3>
+                {(user.role === 'btm' || user.role === 'super_admin') && (
+                  <button onClick={() => setEditMode(!editMode)} className="bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-800 transition">
+                    {editMode ? 'Tutup Edit' : '✏️ Edit Struktur'}
                   </button>
                 )}
               </div>
 
-              {edit ? (
-                <form onSubmit={handleSave} className="space-y-2.5 bg-emerald-50 p-3 rounded-xl border">
-                  {Object.keys(form).map((k) => (
-                    <div key={k}>
-                      <label className="block text-[10px] font-bold capitalize text-gray-700">{k.replace(/([A-Z])/g, ' $1')}</label>
-                      <input type="text" className="w-full p-1.5 border rounded text-xs bg-white" value={form[k]} onChange={(e) => setForm({...form, [k]: e.target.value})} />
-                    </div>
-                  ))}
-                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold text-xs">Simpan</button>
+              {editMode ? (
+                <form onSubmit={handleSave} className="p-3 bg-emerald-50 rounded-xl border space-y-3">
+                  <h4 className="font-bold text-emerald-900 text-xs">Ubah Pengurus BTM</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {Object.keys(form).map(key => (
+                      <div key={key}>
+                        <label className="block text-[10px] font-bold text-gray-700 capitalize mb-0.5">{key.replace(/([A-Z])/g, ' $1')}</label>
+                        <input type="text" className="w-full p-1.5 border rounded text-xs bg-white" value={form[key]} onChange={(e) => setForm({...form, [key]: e.target.value})} />
+                      </div>
+                    ))}
+                  </div>
+                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold text-xs">Simpan Struktur</button>
                 </form>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3 text-xs">
                   {Object.entries(struktur).map(([key, val]) => (
                     <div key={key} className="p-2.5 bg-emerald-50 rounded-lg border">
                       <strong className="capitalize text-emerald-900 block">{key.replace(/([A-Z])/g, ' $1')}</strong>
@@ -1046,12 +998,12 @@
           );
         }
 
-        // --- MODUL KEUANGAN (DENGAN HAK AKSES SUPER ADMIN: TAMBAH, EDIT, HAPUS) ---
+        // --- MODUL KEUANGAN (DENGAN PERBAIKAN TOMBOL TAMBAH, EDIT, & HAPUS KHUSUS SUPER ADMIN) ---
         function KeuanganModule({ keuangan, setKeuangan, user }) {
           const [form, setForm] = useState({ tanggal: '', uraianMasuk: '', masuk: 0, keluar: 0, uraianKeluar: '' });
           const [editId, setEditId] = useState(null); // Menyimpan ID transaksi yang sedang diedit
 
-          // Fungsi untuk menghitung ulang saldo secara otomatis berdasarkan urutan transaksi
+          // Fungsi untuk menghitung ulang saldo otomatis
           const recalculateSaldo = (list) => {
             let currentSaldo = 0;
             return list.map(item => {
@@ -1076,17 +1028,10 @@
             const uraianKeluar = form.uraianKeluar.trim() || '-';
 
             if (editId !== null) {
-              // Mode Edit / Perbarui Data Keuangan
+              // Mode Edit Data Keuangan
               const updated = keuangan.map(item => {
                 if (item.id === editId) {
-                  return {
-                    ...item,
-                    tanggal,
-                    uraianMasuk,
-                    masuk,
-                    keluar,
-                    uraianKeluar
-                  };
+                  return { ...item, tanggal, uraianMasuk, masuk, keluar, uraianKeluar };
                 }
                 return item;
               });
@@ -1094,7 +1039,7 @@
               setEditId(null);
               alert('Data keuangan berhasil diperbarui.');
             } else {
-              // Mode Tambah Data Keuangan Baru
+              // Mode Tambah Transaksi Keuangan Baru
               const newData = {
                 id: Date.now(),
                 tanggal,
@@ -1102,26 +1047,30 @@
                 masuk,
                 keluar,
                 uraianKeluar,
-                saldo: 0 // Akan dihitung ulang oleh fungsi recalculateSaldo
+                saldo: 0
               };
-              setKeuangan(recalculateSaldo([...keuangan, newData]));
-              alert('Transaksi keuangan berhasil ditambahkan.');
+              const updated = [...keuangan, newData];
+              setKeuangan(recalculateSaldo(updated));
+              alert('Transaksi keuangan baru berhasil ditambahkan.');
             }
 
+            // Reset Form
             setForm({ tanggal: '', uraianMasuk: '', masuk: 0, keluar: 0, uraianKeluar: '' });
           };
 
           const handleEditClick = (item) => {
-            if (user.role !== 'super_admin') return;
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak! Hanya Super Admin yang dapat mengedit data keuangan.');
+              return;
+            }
+            setEditId(item.id);
             setForm({
               tanggal: item.tanggal,
-              uraianMasuk: item.uraianMasuk || '',
+              uraianMasuk: item.uraianMasuk,
               masuk: item.masuk,
               keluar: item.keluar,
-              uraianKeluar: item.uraianKeluar || ''
+              uraianKeluar: item.uraianKeluar
             });
-            setEditId(item.id);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
           };
 
           const handleDeleteKeuangan = (id) => {
@@ -1129,10 +1078,10 @@
               alert('Akses Ditolak! Hanya Super Admin yang dapat menghapus data keuangan.');
               return;
             }
-            if (confirm('Apakah Anda yakin ingin menghapus data keuangan ini?')) {
+            if (confirm('Apakah Anda yakin ingin menghapus transaksi keuangan ini?')) {
               const filtered = keuangan.filter(item => item.id !== id);
               setKeuangan(recalculateSaldo(filtered));
-              alert('Data keuangan berhasil dihapus.');
+              alert('Transaksi keuangan berhasil dihapus.');
             }
           };
 
@@ -1158,6 +1107,7 @@
                 <button onClick={downloadCSV} className="bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-800 transition">📥 Download CSV</button>
               </div>
 
+              {/* FORM TAMBAH / EDIT KEUANGAN KHUSUS SUPER ADMIN */}
               {user.role === 'super_admin' && (
                 <form onSubmit={handleSaveKeuangan} className="p-3 bg-emerald-50 rounded-xl border space-y-2">
                   <div className="flex justify-between items-center">
@@ -1169,42 +1119,43 @@
                     )}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2">
-                    <input type="date" className="p-1.5 border rounded text-xs bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} />
-                    <input type="text" placeholder="Uraian Pemasukan" className="p-1.5 border rounded text-xs bg-white" value={form.uraianMasuk} onChange={(e) => setForm({...form, uraianMasuk: e.target.value})} />
-                    <input type="number" placeholder="Uang Masuk (Rp)" className="p-1.5 border rounded text-xs bg-white" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
-                    <input type="number" placeholder="Uang Keluar (Rp)" className="p-1.5 border rounded text-xs bg-white" value={form.keluar} onChange={(e) => setForm({...form, keluar: e.target.value})} />
-                    <input type="text" placeholder="Uraian Uang Keluar" className="p-1.5 border rounded text-xs bg-white" value={form.uraianKeluar} onChange={(e) => setForm({...form, uraianKeluar: e.target.value})} />
+                    <input type="date" className="p-1.5 border rounded text-xs bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} required />
+                    <input type="text" className="p-1.5 border rounded text-xs bg-white" placeholder="Uraian Masuk (- jika kosong)" value={form.uraianMasuk} onChange={(e) => setForm({...form, uraianMasuk: e.target.value})} />
+                    <input type="number" className="p-1.5 border rounded text-xs bg-white" placeholder="Jumlah Masuk (Rp)" value={form.masuk} onChange={(e) => setForm({...form, masuk: e.target.value})} />
+                    <input type="number" className="p-1.5 border rounded text-xs bg-white" placeholder="Jumlah Keluar (Rp)" value={form.keluar} onChange={(e) => setForm({...form, keluar: e.target.value})} />
+                    <input type="text" className="p-1.5 border rounded text-xs bg-white" placeholder="Uraian Keluar (- jika kosong)" value={form.uraianKeluar} onChange={(e) => setForm({...form, uraianKeluar: e.target.value})} />
                   </div>
-                  <button type="submit" className="w-full bg-emerald-700 text-white rounded font-bold text-xs py-1.5">
-                    {editId !== null ? 'Perbarui Transaksi' : 'Simpan Transaksi'}
+                  <button type="submit" className="w-full bg-emerald-700 text-white py-2 rounded font-bold text-xs hover:bg-emerald-800 transition">
+                    {editId !== null ? 'Perbarui Transaksi' : 'Simpan Transaksi Keuangan'}
                   </button>
                 </form>
               )}
 
+              {/* TABEL LAPORAN KEUANGAN */}
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-200 text-xs">
+                <table className="w-full border-collapse text-xs">
                   <thead>
-                    <tr className="bg-emerald-100 text-emerald-900">
+                    <tr className="bg-emerald-900 text-white text-[10px]">
                       <th className="border p-1.5">No</th>
-                      <th className="border p-1.5">Hari/Tanggal</th>
-                      <th className="border p-1.5">Uraian Pemasukan</th>
-                      <th className="border p-1.5">Uang Masuk</th>
-                      <th className="border p-1.5">Uang Keluar</th>
-                      <th className="border p-1.5">Uraian Uang Keluar</th>
-                      <th className="border p-1.5">Saldo</th>
+                      <th className="border p-1.5">Tanggal</th>
+                      <th className="border p-1.5">Uraian Masuk</th>
+                      <th className="border p-1.5">Masuk (Rp)</th>
+                      <th className="border p-1.5">Keluar (Rp)</th>
+                      <th className="border p-1.5">Uraian Keluar</th>
+                      <th className="border p-1.5">Saldo (Rp)</th>
                       {user.role === 'super_admin' && <th className="border p-1.5">Aksi</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {keuangan.length > 0 ? keuangan.map((item, idx) => (
-                      <tr key={item.id} className="text-center">
-                        <td className="border p-1.5">{idx + 1}</td>
-                        <td className="border p-1.5">{item.tanggal}</td>
-                        <td className="border p-1.5 text-left">{item.uraianMasuk || '-'}</td>
-                        <td className="border p-1.5 text-green-600 font-semibold">Rp {item.masuk.toLocaleString()}</td>
-                        <td className="border p-1.5 text-red-600 font-semibold">Rp {item.keluar.toLocaleString()}</td>
-                        <td className="border p-1.5 text-left">{item.uraianKeluar || '-'}</td>
-                        <td className="border p-1.5 font-bold">Rp {item.saldo.toLocaleString()}</td>
+                    {keuangan.length > 0 ? keuangan.map((item, index) => (
+                      <tr key={item.id} className="hover:bg-gray-50 text-center">
+                        <td className="border p-1.5">{index + 1}</td>
+                        <td className="border p-1.5 whitespace-nowrap">{item.tanggal}</td>
+                        <td className="border p-1.5 text-left">{item.uraianMasuk}</td>
+                        <td className="border p-1.5 text-emerald-700 font-bold whitespace-nowrap">{Number(item.masuk).toLocaleString('id-ID')}</td>
+                        <td className="border p-1.5 text-red-600 font-bold whitespace-nowrap">{Number(item.keluar).toLocaleString('id-ID')}</td>
+                        <td className="border p-1.5 text-left">{item.uraianKeluar}</td>
+                        <td className="border p-1.5 font-bold font-mono whitespace-nowrap">{Number(item.saldo).toLocaleString('id-ID')}</td>
                         {user.role === 'super_admin' && (
                           <td className="border p-1.5 space-x-1 whitespace-nowrap">
                             <button onClick={() => handleEditClick(item)} className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-blue-700">Edit</button>
@@ -1222,11 +1173,10 @@
           );
         }
 
-        // --- MODUL DATA JAMAAH (DENGAN HAK AKSES SUPER ADMIN: TAMBAH, EDIT, HAPUS) ---
         function JamaahModule({ jamaahList, setJamaahList, user, credentialsBTM, setCredentialsBTM }) {
           const [searchQuery, setSearchQuery] = useState('');
           const [form, setForm] = useState({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
-          const [editIndex, setEditIndex] = useState(null); // Menyimpan index data yang sedang diedit
+          const [editIndex, setEditIndex] = useState(null);
           const [btmUserForm, setBtmUserForm] = useState(credentialsBTM.user);
           const [btmPassForm, setBtmPassForm] = useState(credentialsBTM.pass);
 
@@ -1242,54 +1192,57 @@
             }
 
             if (editIndex !== null) {
-              // Mode Edit / Merubah Data
               const updatedList = [...jamaahList];
               updatedList[editIndex] = { ...form, jumlah: parseInt(form.jumlah) || 1 };
               setJamaahList(updatedList);
               setEditIndex(null);
               alert('Data jamaah berhasil diperbarui.');
             } else {
-              // Mode Tambah Data Baru
               if (jamaahList.some(item => item.no_kk.trim() === form.no_kk.trim())) {
-                alert(`Nomor KK "${form.no_kk}" sudah terdaftar.`);
+                alert(`Nomor KK "${form.no_kk}" sudah terdaftar dalam sistem.`);
                 return;
               }
-              setJamaahList([...jamaahList, { ...form, jumlah: parseInt(form.jumlah) || 1 }]);
-              alert('Data keluarga jamaah berhasil ditambahkan.');
+              const newJ = { ...form, jumlah: parseInt(form.jumlah) || 1 };
+              setJamaahList([...jamaahList, newJ]);
+              alert('Data kepala keluarga jamaah berhasil ditambahkan.');
             }
-
             setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
           };
 
           const handleEditClick = (item, index) => {
-            if (user.role !== 'super_admin') return;
-            setForm(item);
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak!');
+              return;
+            }
             setEditIndex(index);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setForm(item);
           };
 
           const handleDeleteJamaah = (index) => {
             if (user.role !== 'super_admin') {
-              alert('Akses Ditolak! Hanya Super Admin yang dapat menghapus data jamaah.');
+              alert('Akses Ditolak!');
               return;
             }
-            if (confirm('Apakah Anda yakin ingin menghapus data jamaah ini?')) {
+            if (confirm('Yakin ingin menghapus data jamaah ini?')) {
               const updatedList = jamaahList.filter((_, i) => i !== index);
               setJamaahList(updatedList);
-              alert('Data jamaah berhasil dihapus.');
             }
           };
 
           const handleUpdateBTMAuth = (e) => {
             e.preventDefault();
+            if (user.role !== 'super_admin') {
+              alert('Akses Ditolak!');
+              return;
+            }
             setCredentialsBTM({ user: btmUserForm, pass: btmPassForm });
-            alert('Kredensial BTM diperbarui!');
+            alert('Kredensial login Pengurus BTM berhasil diperbarui!');
           };
 
-          const filteredJamaah = jamaahList.filter(item => 
-            item.no_kk.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.hp.toLowerCase().includes(searchQuery.toLowerCase())
+          const filteredJamaah = jamaahList.filter(j => 
+            j.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            j.no_kk.includes(searchQuery) || 
+            j.hp.includes(searchQuery)
           );
 
           return (
@@ -1312,42 +1265,43 @@
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <input type="text" placeholder="Nomor KK (Username)" className="p-1.5 border rounded text-xs bg-white" value={form.no_kk} onChange={(e) => setForm({...form, no_kk: e.target.value})} required />
                     <input type="text" placeholder="Nama Kepala Keluarga" className="p-1.5 border rounded text-xs bg-white" value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} required />
-                    <input type="text" placeholder="Password Jamaah" className="p-1.5 border rounded text-xs bg-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} required />
-                    <input type="text" placeholder="No KTP" className="p-1.5 border rounded text-xs bg-white" value={form.ktp} onChange={(e) => setForm({...form, ktp: e.target.value})} />
-                    <input type="text" placeholder="No HP / WhatsApp" className="p-1.5 border rounded text-xs bg-white" value={form.hp} onChange={(e) => setForm({...form, hp: e.target.value})} />
-                    <input type="text" placeholder="Alamat" className="p-1.5 border rounded text-xs bg-white" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} />
+                    <input type="password" placeholder="Password Login" className="p-1.5 border rounded text-xs bg-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} required />
+                    <input type="text" placeholder="No. KTP" className="p-1.5 border rounded text-xs bg-white" value={form.ktp} onChange={(e) => setForm({...form, ktp: e.target.value})} />
+                    <input type="text" placeholder="No. HP / WhatsApp" className="p-1.5 border rounded text-xs bg-white" value={form.hp} onChange={(e) => setForm({...form, hp: e.target.value})} />
+                    <input type="number" min="1" placeholder="Jumlah Anggota" className="p-1.5 border rounded text-xs bg-white" value={form.jumlah} onChange={(e) => setForm({...form, jumlah: e.target.value})} />
+                    <input type="text" placeholder="Alamat Lengkap" className="p-1.5 border rounded text-xs bg-white sm:col-span-3" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} />
+                    <input type="text" placeholder="Nama Anggota Keluarga (pisahkan koma)" className="p-1.5 border rounded text-xs bg-white sm:col-span-3" value={form.anggota} onChange={(e) => setForm({...form, anggota: e.target.value})} />
                   </div>
-                  <input type="text" placeholder="Anggota Keluarga (pisahkan koma)" className="w-full p-1.5 border rounded text-xs bg-white" value={form.anggota} onChange={(e) => setForm({...form, anggota: e.target.value})} />
-                  <button type="submit" className="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold text-xs">
-                    {editIndex !== null ? 'Perbarui Data Jamaah' : 'Simpan Data'}
+                  <button type="submit" className="w-full bg-emerald-700 text-white py-1.5 rounded font-bold text-xs hover:bg-emerald-800 transition">
+                    {editIndex !== null ? 'Perbarui Data Jamaah' : 'Simpan Data Jamaah'}
                   </button>
                 </form>
               )}
 
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-200 text-xs">
+                <table className="w-full border-collapse text-xs">
                   <thead>
-                    <tr className="bg-emerald-100 text-emerald-900">
-                      <th className="border p-1.5">No KK (Login)</th>
+                    <tr className="bg-emerald-900 text-white text-[10px]">
+                      <th className="border p-1.5">No</th>
+                      <th className="border p-1.5">No. KK</th>
                       <th className="border p-1.5">Kepala Keluarga</th>
-                      <th className="border p-1.5">No HP</th>
+                      <th className="border p-1.5">No. HP</th>
                       <th className="border p-1.5">Alamat</th>
-                      <th className="border p-1.5">Jumlah</th>
-                      <th className="border p-1.5">Anggota Keluarga</th>
+                      <th className="border p-1.5">Jiwa</th>
                       {user.role === 'super_admin' && <th className="border p-1.5">Aksi</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredJamaah.length > 0 ? filteredJamaah.map((item, idx) => {
+                    {filteredJamaah.length > 0 ? filteredJamaah.map((item, index) => {
                       const originalIndex = jamaahList.findIndex(j => j.no_kk === item.no_kk);
                       return (
-                        <tr key={idx} className="text-center">
-                          <td className="border p-1.5 font-semibold text-emerald-700">{item.no_kk}</td>
-                          <td className="border p-1.5 font-bold text-emerald-950">{item.nama}</td>
+                        <tr key={index} className="hover:bg-gray-50 text-center">
+                          <td className="border p-1.5">{index + 1}</td>
+                          <td className="border p-1.5 font-mono">{item.no_kk}</td>
+                          <td className="border p-1.5 font-bold text-left">{item.nama}</td>
                           <td className="border p-1.5">{item.hp}</td>
-                          <td className="border p-1.5">{item.alamat}</td>
+                          <td className="border p-1.5 text-left">{item.alamat}</td>
                           <td className="border p-1.5">{item.jumlah}</td>
-                          <td className="border p-1.5 text-left text-[11px]">{item.anggota}</td>
                           {user.role === 'super_admin' && (
                             <td className="border p-1.5 space-x-1 whitespace-nowrap">
                               <button onClick={() => handleEditClick(item, originalIndex)} className="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold hover:bg-blue-700">Edit</button>
@@ -1369,7 +1323,7 @@
                   <form onSubmit={handleUpdateBTMAuth} className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <input type="text" className="p-1.5 border rounded text-xs bg-white" placeholder="Username BTM" value={btmUserForm} onChange={(e) => setBtmUserForm(e.target.value)} required />
                     <input type="text" className="p-1.5 border rounded text-xs bg-white" placeholder="Password BTM" value={btmPassForm} onChange={(e) => setBtmPassForm(e.target.value)} required />
-                    <button type="submit" className="bg-yellow-600 text-white px-3 py-1.5 rounded font-bold text-xs sm:col-span-2">Perbarui BTM</button>
+                    <button type="submit" className="bg-yellow-600 text-white px-3 py-1.5 rounded font-bold text-xs sm:col-span-2 hover:bg-yellow-700 transition">Perbarui BTM</button>
                   </form>
                 </div>
               )}
@@ -1377,7 +1331,7 @@
           );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
