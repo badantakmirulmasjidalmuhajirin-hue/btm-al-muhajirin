@@ -39,7 +39,7 @@
           ]);
 
           const [jamaahList, setJamaahList] = useState([
-            { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah' }
+            { no_kk: '7171011234560001', nama: 'H. Abdullah', ktp: '7171011234560001', hp: '081234567890', alamat: 'Wawonasa Lingkungan I', jumlah: 4, anggota: 'H. Abdullah, Hj. Aminah, Ahmad, Fatimah', password: '123' }
           ]);
 
           const [strukturBTM, setStrukturBTM] = useState({
@@ -70,21 +70,33 @@
           const [credentialsSuper, setCredentialsSuper] = useState({ user: 'super_admin', pass: '2026-2029' });
 
           const handleLogin = (username, password) => {
-            if (username === credentialsSuper.user && password === credentialsSuper.pass) {
-              setUser({ username, role: 'super_admin' });
-            } else if (username === credentialsBTM.user && password === credentialsBTM.pass) {
-              setUser({ username, role: 'btm' });
-            } else if (username.trim() !== '' && password.trim() !== '') {
-              setUser({ username, role: 'jamaah' });
+            const trimmedUser = username.trim();
+            const trimmedPass = password.trim();
+
+            if (trimmedUser === credentialsSuper.user && trimmedPass === credentialsSuper.pass) {
+              setUser({ username: trimmedUser, role: 'super_admin', nama: 'Super Admin' });
+            } else if (trimmedUser === credentialsBTM.user && trimmedPass === credentialsBTM.pass) {
+              setUser({ username: trimmedUser, role: 'btm', nama: 'Pengurus BTM' });
             } else {
-              alert('Username atau Password salah!');
+              // Cek apakah login sebagai Jamaah menggunakan No KK yang sudah terdaftar
+              const foundJamaah = jamaahList.find(j => j.no_kk === trimmedUser);
+              if (foundJamaah) {
+                // Jika jamaah belum punya password tersimpan, set default password atau cocokan bebas
+                if (!foundJamaah.password || foundJamaah.password === trimmedPass) {
+                  setUser({ username: foundJamaah.no_kk, role: 'jamaah', nama: foundJamaah.nama });
+                } else {
+                  alert('Password Jamaah salah! Silakan masukkan password yang benar.');
+                }
+              } else {
+                alert('Login Gagal! Username / Nomor KK tidak ditemukan dalam sistem. Pastikan Anda sudah mendaftarkan No KK keluarga Anda, atau gunakan akun BTM/Super Admin.');
+              }
             }
           };
 
           return (
             <div className="min-h-screen bg-gray-50 flex flex-col">
               {!user ? (
-                <LoginScreen onLogin={handleLogin} profilMasjid={profilMasjid} currentTime={currentTime} />
+                <LoginScreen onLogin={handleLogin} profilMasjid={profilMasjid} currentTime={currentTime} jamaahList={jamaahList} setJamaahList={setJamaahList} />
               ) : (
                 <MainLayout 
                   user={user} 
@@ -181,10 +193,43 @@
           return { jadwal, lokasiNama, loading, error, fetchJadwalByCity, deteksiLokasiGPS };
         }
 
-        function LoginScreen({ onLogin, profilMasjid, currentTime }) {
+        function LoginScreen({ onLogin, profilMasjid, currentTime, jamaahList, setJamaahList }) {
           const [u, setU] = useState('');
           const [p, setP] = useState('');
+          const [showRegister, setShowRegister] = useState(false);
+          const [regForm, setRegForm] = useState({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
           const { jadwal, lokasiNama, deteksiLokasiGPS, fetchJadwalByCity } = useJadwalSholat();
+
+          const handleRegisterJamaah = (e) => {
+            e.preventDefault();
+            if (!regForm.no_kk || !regForm.nama || !regForm.password) {
+              alert('Nomor KK, Nama Kepala Keluarga, dan Password wajib diisi!');
+              return;
+            }
+
+            const isExist = jamaahList.some(item => item.no_kk.trim() === regForm.no_kk.trim());
+            if (isExist) {
+              alert(`Pendaftaran Ditolak! Nomor KK "${regForm.no_kk}" sudah pernah didaftarkan dalam sistem.`);
+              return;
+            }
+
+            const newJamaah = {
+              no_kk: regForm.no_kk,
+              nama: regForm.nama,
+              ktp: regForm.ktp || '-',
+              hp: regForm.hp || '-',
+              alamat: regForm.alamat || '-',
+              jumlah: parseInt(regForm.jumlah) || 1,
+              anggota: regForm.anggota || '-',
+              password: regForm.password
+            };
+
+            setJamaahList([...jamaahList, newJamaah]);
+            alert('Pendaftaran akun Jamaah berhasil! Silakan login menggunakan Nomor KK dan password Anda.');
+            setU(regForm.no_kk);
+            setP(regForm.password);
+            setShowRegister(false);
+          };
 
           return (
             <div className="min-h-screen bg-emerald-950 p-4 md:p-8 flex flex-col justify-center items-center">
@@ -238,21 +283,47 @@
                   </div>
 
                   <div className="bg-white rounded-2xl p-6 shadow-xl border border-emerald-100 flex flex-col justify-center">
-                    <div className="text-center mb-6">
-                      <h3 className="text-xl font-bold text-emerald-900">Masuk ke Aplikasi</h3>
-                      <p className="text-xs text-gray-500 mt-1">Jamaah, Pengurus BTM, atau Super Admin</p>
-                    </div>
-                    <div className="space-y-4">
+                    {!showRegister ? (
                       <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Username / Akun</label>
-                        <input type="text" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Username / Nama" value={u} onChange={(e) => setU(e.target.value)} />
+                        <div className="text-center mb-6">
+                          <h3 className="text-xl font-bold text-emerald-900">Masuk ke Aplikasi</h3>
+                          <p className="text-xs text-gray-500 mt-1">Jamaah (No KK), BTM, atau Super Admin</p>
+                        </div>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Username / No. KK Anda</label>
+                            <input type="text" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan No KK / btm_masjid / super_admin" value={u} onChange={(e) => setU(e.target.value)} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                            <input type="password" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Password" value={p} onChange={(e) => setP(e.target.value)} />
+                          </div>
+                          <button onClick={() => onLogin(u, p)} className="w-full bg-emerald-700 text-white p-3 rounded-lg font-bold hover:bg-emerald-800 transition">Masuk Aplikasi</button>
+                          
+                          <div className="text-center pt-2 border-t">
+                            <p className="text-xs text-gray-600">Belum terdaftar sebagai Jamaah?</p>
+                            <button onClick={() => setShowRegister(true)} className="mt-1 text-xs text-emerald-700 font-bold hover:underline">✨ Daftarkan Kartu Keluarga (KK) Jamaah</button>
+                          </div>
+                        </div>
                       </div>
+                    ) : (
                       <div>
-                        <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
-                        <input type="password" className="w-full p-3 border rounded-lg text-sm" placeholder="Masukkan Password" value={p} onChange={(e) => setP(e.target.value)} />
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-bold text-emerald-900">Pendaftaran Akun Jamaah</h3>
+                          <button onClick={() => setShowRegister(false)} className="text-xs text-red-600 font-bold">Kembali ke Login</button>
+                        </div>
+                        <form onSubmit={handleRegisterJamaah} className="space-y-3">
+                          <input type="text" placeholder="Nomor KK (Sebagai Username Login)" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.no_kk} onChange={(e) => setRegForm({...regForm, no_kk: e.target.value})} required />
+                          <input type="text" placeholder="Nama Kepala Keluarga" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.nama} onChange={(e) => setRegForm({...regForm, nama: e.target.value})} required />
+                          <input type="password" placeholder="Atur Password Anda Bebas" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.password} onChange={(e) => setRegForm({...regForm, password: e.target.value})} required />
+                          <input type="text" placeholder="Nomor HP / WhatsApp" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.hp} onChange={(e) => setRegForm({...regForm, hp: e.target.value})} />
+                          <input type="text" placeholder="Alamat Lengkap" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.alamat} onChange={(e) => setRegForm({...regForm, alamat: e.target.value})} />
+                          <input type="number" min="1" placeholder="Jumlah Anggota Keluarga" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.jumlah} onChange={(e) => setRegForm({...regForm, jumlah: e.target.value})} />
+                          <input type="text" placeholder="Nama-Nama Anggota Keluarga (Pisahkan koma)" className="w-full p-2.5 border rounded-lg text-xs" value={regForm.anggota} onChange={(e) => setRegForm({...regForm, anggota: e.target.value})} />
+                          <button type="submit" className="w-full bg-emerald-700 text-white p-2.5 rounded-lg font-bold text-xs hover:bg-emerald-800">Daftar & Simpan Akun</button>
+                        </form>
                       </div>
-                      <button onClick={() => onLogin(u, p)} className="w-full bg-emerald-700 text-white p-3 rounded-lg font-bold hover:bg-emerald-800 transition">Masuk Aplikasi</button>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -294,7 +365,7 @@
               <div className="flex-1 p-6 md:p-10 overflow-y-auto">
                 <header className="flex justify-between items-center mb-6 pb-4 border-b">
                   <h2 className="text-lg font-bold text-emerald-900 capitalize">{activeMenu.replace('_', ' ')}</h2>
-                  <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full">Login sebagai: {user.username} ({user.role})</span>
+                  <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full">Login: {user.nama || user.username} ({user.role})</span>
                 </header>
 
                 {activeMenu === 'home' && <HomeModule profil={profilMasjid} setProfilMasjid={setProfilMasjid} user={user} />}
@@ -625,7 +696,7 @@
           );
         }
 
-        // --- MODUL KEUANGAN (HANYA SUPER ADMIN YANG BISA TAMBAH, BTM & JAMAAH HANYA LIHAT & DOWNLOAD) ---
+        // --- MODUL KEUANGAN ---
         function KeuanganModule({ keuangan, setKeuangan, user }) {
           const [form, setForm] = useState({ tanggal: '', uraian: '', masuk: 0, keluar: 0 });
 
@@ -675,7 +746,6 @@
                 <button onClick={downloadCSV} className="bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-800 transition">📥 Download Keuangan (CSV)</button>
               </div>
 
-              {/* Form Input Keuangan HANYA MUNCUL untuk SUPER ADMIN */}
               {user.role === 'super_admin' ? (
                 <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-4 bg-emerald-50 rounded-xl border">
                   <input type="date" className="p-2 border rounded text-sm bg-white" value={form.tanggal} onChange={(e) => setForm({...form, tanggal: e.target.value})} />
@@ -685,7 +755,7 @@
                 </form>
               ) : (
                 <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-lg">
-                  ℹ️ Catatan: Anda login sebagai <strong>{user.role === 'btm' ? 'Pengurus BTM' : 'Jamaah'}</strong>. Sesuai hak akses, Anda dapat melihat dan mendownload laporan keuangan, namun tidak memiliki wewenang untuk mengubah atau menambah data keuangan.
+                  ℹ️ Catatan: Anda login sebagai <strong>{user.role === 'btm' ? 'Pengurus BTM' : 'Jamaah'}</strong>. Sesuai hak akses, Anda dapat melihat dan mendownload laporan keuangan.
                 </div>
               )}
 
@@ -719,23 +789,20 @@
           );
         }
 
-        // --- MODUL DATA JAMAAH (PENCARIAN + CEK KODE GANDA KK + GANTI PASSWORD BTM OLEH SUPER ADMIN) ---
+        // --- MODUL DATA JAMAAH ---
         function JamaahModule({ jamaahList, setJamaahList, user, credentialsBTM, setCredentialsBTM }) {
           const [searchQuery, setSearchQuery] = useState('');
-          const [form, setForm] = useState({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '' });
-          
-          // Form ganti password BTM khusus Super Admin
+          const [form, setForm] = useState({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
           const [btmUserForm, setBtmUserForm] = useState(credentialsBTM.user);
           const [btmPassForm, setBtmPassForm] = useState(credentialsBTM.pass);
 
           const handleAddJamaah = (e) => {
             e.preventDefault();
-            if (!form.no_kk || !form.nama) {
-              alert('Nomor KK dan Nama Kepala Keluarga wajib diisi!');
+            if (!form.no_kk || !form.nama || !form.password) {
+              alert('Nomor KK, Nama Kepala Keluarga, dan Password wajib diisi!');
               return;
             }
 
-            // Pembaca Data Ganda (Cek No KK sudah terdaftar atau belum)
             const isExist = jamaahList.some(item => item.no_kk.trim() === form.no_kk.trim());
             if (isExist) {
               alert(`Pendaftaran Ditolak! Nomor KK "${form.no_kk}" sudah pernah didaftarkan dalam sistem.`);
@@ -749,12 +816,13 @@
               hp: form.hp || '-',
               alamat: form.alamat || '-',
               jumlah: parseInt(form.jumlah) || 1,
-              anggota: form.anggota || '-'
+              anggota: form.anggota || '-',
+              password: form.password
             };
 
             setJamaahList([...jamaahList, newJamaah]);
-            setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '' });
-            alert('Data keluarga jamaah berhasil ditambahkan.');
+            setForm({ no_kk: '', nama: '', ktp: '', hp: '', alamat: '', jumlah: 1, anggota: '', password: '' });
+            alert('Data keluarga jamaah dan akun login berhasil ditambahkan.');
           };
 
           const handleUpdateBTMAuth = (e) => {
@@ -763,7 +831,6 @@
             alert('Username & Password Pengurus BTM berhasil diperbarui oleh Super Admin!');
           };
 
-          // Filter Pencarian (Bisa lewat KK, Nama, atau No Telp/Wa)
           const filteredJamaah = jamaahList.filter(item => 
             item.no_kk.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -774,7 +841,6 @@
             <div className="bg-white p-6 rounded-xl shadow border space-y-6">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <h3 className="text-xl font-bold text-emerald-900">👥 Data Jamaah Masjid & Kartu Keluarga</h3>
-                {/* Kolom Pencarian */}
                 <input 
                   type="text" 
                   placeholder="Cari (No KK / Nama / No HP)..." 
@@ -784,12 +850,12 @@
                 />
               </div>
 
-              {/* Form Tambah Data Keluarga oleh Jamaah / BTM / Super Admin */}
               <form onSubmit={handleAddJamaah} className="p-4 bg-emerald-50 rounded-xl border space-y-3">
-                <h4 className="font-bold text-emerald-900 text-sm">➕ Tambah Data Keluarga Baru (Berdasarkan Kartu Keluarga)</h4>
+                <h4 className="font-bold text-emerald-900 text-sm">➕ Tambah Data Keluarga Baru (No KK sebagai Login Jamaah)</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input type="text" placeholder="Nomor KK (Wajib Unik)" className="p-2 border rounded text-sm bg-white" value={form.no_kk} onChange={(e) => setForm({...form, no_kk: e.target.value})} required />
+                  <input type="text" placeholder="Nomor KK (Username Login)" className="p-2 border rounded text-sm bg-white" value={form.no_kk} onChange={(e) => setForm({...form, no_kk: e.target.value})} required />
                   <input type="text" placeholder="Nama Kepala Keluarga" className="p-2 border rounded text-sm bg-white" value={form.nama} onChange={(e) => setForm({...form, nama: e.target.value})} required />
+                  <input type="password" placeholder="Password Jamaah (Bebas)" className="p-2 border rounded text-sm bg-white" value={form.password} onChange={(e) => setForm({...form, password: e.target.value})} required />
                   <input type="text" placeholder="Nomor KTP Kepala Keluarga" className="p-2 border rounded text-sm bg-white" value={form.ktp} onChange={(e) => setForm({...form, ktp: e.target.value})} />
                   <input type="text" placeholder="Nomor HP / WhatsApp" className="p-2 border rounded text-sm bg-white" value={form.hp} onChange={(e) => setForm({...form, hp: e.target.value})} />
                   <input type="text" placeholder="Alamat Lengkap" className="p-2 border rounded text-sm bg-white" value={form.alamat} onChange={(e) => setForm({...form, alamat: e.target.value})} />
@@ -799,12 +865,11 @@
                 <button type="submit" className="bg-emerald-700 text-white px-4 py-2 rounded font-bold text-xs">Simpan Data Jamaah</button>
               </form>
 
-              {/* Tabel Data Jamaah */}
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200 text-sm">
                   <thead>
                     <tr className="bg-emerald-100 text-emerald-900">
-                      <th className="border p-2">Nomor KK</th>
+                      <th className="border p-2">Nomor KK (Login)</th>
                       <th className="border p-2">Kepala Keluarga</th>
                       <th className="border p-2">No KTP</th>
                       <th className="border p-2">No HP / WA</th>
@@ -816,7 +881,7 @@
                   <tbody>
                     {filteredJamaah.length > 0 ? filteredJamaah.map((item, idx) => (
                       <tr key={idx} className="text-center">
-                        <td className="border p-2 font-semibold">{item.no_kk}</td>
+                        <td className="border p-2 font-semibold text-emerald-700">{item.no_kk}</td>
                         <td className="border p-2 font-bold text-emerald-950">{item.nama}</td>
                         <td className="border p-2">{item.ktp}</td>
                         <td className="border p-2">{item.hp}</td>
@@ -833,7 +898,6 @@
                 </table>
               </div>
 
-              {/* FITUR KHUSUS SUPER ADMIN: UBAH USER & PASSWORD BTM */}
               {user.role === 'super_admin' && (
                 <div className="p-4 bg-yellow-50 rounded-xl border border-yellow-200 space-y-3 mt-6">
                   <h4 className="font-bold text-yellow-900 text-sm">⚙️ Panel Super Admin: Ubah Kredensial Pengurus BTM</h4>
