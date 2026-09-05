@@ -1,0 +1,15 @@
+{
+  "short_name": "BTM Al-Muhajirin",
+  "name": "Masjid Al-Muhajirin Wawonasa",
+  "icons": [
+    {
+      "src": "/logo-masjid.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#064e3b",
+  "theme_color": "#064e3b",
+  "display": "standalone"
+}
